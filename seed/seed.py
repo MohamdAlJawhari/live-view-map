@@ -1,4 +1,11 @@
 from datetime import datetime
+from pathlib import Path
+import sys
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
 from app import app
 from extensions import db
 from models import News
@@ -36,13 +43,17 @@ sample_news = [
     )
 ]
 
-with app.app_context():
-    db.create_all()
+def main():
+    with app.app_context():
+        db.create_all()
 
-    # optional: avoid duplicate inserts
-    if News.query.count() == 0:
-        db.session.add_all(sample_news)
-        db.session.commit()
-        print("Sample news inserted successfully.")
-    else:
-        print("Database already contains data.")
+        if News.query.count() == 0:
+            db.session.add_all(sample_news)
+            db.session.commit()
+            print("Sample news inserted successfully.")
+        else:
+            print("Database already contains data.")
+
+
+if __name__ == "__main__":
+    main()
