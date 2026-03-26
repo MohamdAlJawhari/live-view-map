@@ -1,0 +1,126 @@
+:root {
+    --bg: #f3f0e8;
+    --panel: rgba(255, 255, 255, 0.88);
+    --text: #182126;
+    --muted: #5f6b73;
+    --accent: #157f75;
+    --accent-dark: #0f5f58;
+    --border: rgba(24, 33, 38, 0.1);
+    --shadow: 0 24px 60px rgba(24, 33, 38, 0.12);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--text);
+    background:
+        radial-gradient(circle at top left, rgba(21, 127, 117, 0.18), transparent 28%),
+        linear-gradient(135deg, #fbfaf6 0%, var(--bg) 100%);
+}
+
+.container {
+    width: min(1120px, calc(100% - 2rem));
+    margin: 0 auto;
+}
+
+.site-header {
+    padding: 1.5rem 0;
+}
+
+.site-header h1 {
+    margin: 0;
+    font-size: clamp(1.6rem, 2vw, 2.25rem);
+    letter-spacing: 0.02em;
+}
+
+.hero {
+    display: grid;
+    grid-template-columns: minmax(280px, 420px) minmax(320px, 1fr);
+    gap: 1.5rem;
+    align-items: stretch;
+    padding-bottom: 2rem;
+}
+
+.hero-copy,
+.map-panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(10px);
+}
+
+.hero-copy {
+    padding: 2rem;
+}
+
+.eyebrow {
+    margin: 0 0 0.75rem;
+    color: var(--accent-dark);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.8rem;
+}
+
+.hero-copy h2 {
+    margin: 0 0 1rem;
+    font-size: clamp(2rem, 4vw, 3.4rem);
+    line-height: 1;
+}
+
+.lead {
+    margin: 0;
+    color: var(--muted);
+    font-size: 1rem;
+    line-height: 1.7;
+}
+
+.status-card {
+    display: flex;
+    gap: 0.9rem;
+    align-items: center;
+    margin-top: 1.5rem;
+    padding: 1rem 1.1rem;
+    border-radius: 18px;
+    background: rgba(21, 127, 117, 0.08);
+}
+
+.status-card p {
+    margin: 0.25rem 0 0;
+    color: var(--muted);
+}
+
+.status-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #2ecc71;
+    box-shadow: 0 0 0 8px rgba(46, 204, 113, 0.14);
+}
+
+.map-panel {
+    padding: 0.75rem;
+}
+
+#map {
+    width: 100%;
+    min-height: 70vh;
+    border-radius: 18px;
+    overflow: hidden;
+}
+
+@media (max-width: 860px) {
+    .hero {
+        grid-template-columns: 1fr;
+    }
+
+    #map {
+        min-height: 55vh;
+    }
+}

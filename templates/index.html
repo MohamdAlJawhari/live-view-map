@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-copy">
+        <p class="eyebrow">Flask starter</p>
+        <h2>Monitor a location with a simple live map view.</h2>
+        <p class="lead">
+            This starter project gives you a working Flask app, a styled page,
+            and a Leaflet map ready for your live location data.
+        </p>
+        <div class="status-card">
+            <span class="status-dot"></span>
+            <div>
+                <strong>Map status</strong>
+                <p id="map-status">Initializing map...</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="map-panel">
+        <div id="map"></div>
+    </div>
+</section>
+{% endblock %}
