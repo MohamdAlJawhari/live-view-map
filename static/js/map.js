@@ -4,9 +4,20 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
 
+const USE_CLUSTERING = true; // change to true or false
 const markersById = {};
 const newsCards = document.querySelectorAll(".news-card");
 const typeFilter = document.getElementById("type-filter");
+
+// Create one marker layer only
+let markerLayer;
+
+if (USE_CLUSTERING) {
+    markerLayer = L.markerClusterGroup();
+    map.addLayer(markerLayer);
+} else {
+    markerLayer = map;
+}
 
 // Add markers from database
 if (typeof newsData !== "undefined" && Array.isArray(newsData)) {
@@ -27,7 +38,12 @@ if (typeof newsData !== "undefined" && Array.isArray(newsData)) {
             </div>
         `);
 
-        marker.addTo(map);
+        if (USE_CLUSTERING) {
+            markerLayer.addLayer(marker);
+        } else {
+            marker.addTo(map);
+        }
+
         markersById[item.id] = {
             marker: marker,
             type: item.marker_type
@@ -51,28 +67,38 @@ newsCards.forEach(card => {
 });
 
 // Filter logic
-typeFilter.addEventListener("change", () => {
-    const selectedType = typeFilter.value;
+if (typeFilter) {
+    typeFilter.addEventListener("change", () => {
+        const selectedType = typeFilter.value;
 
-    // Show/hide markers
-    Object.keys(markersById).forEach(id => {
-        const markerEntry = markersById[id];
+        // Show/hide markers
+        Object.keys(markersById).forEach(id => {
+            const markerEntry = markersById[id];
 
-        if (selectedType === "all" || markerEntry.type === selectedType) {
-            markerEntry.marker.addTo(map);
-        } else {
-            map.removeLayer(markerEntry.marker);
-        }
+            if (selectedType === "all" || markerEntry.type === selectedType) {
+                if (USE_CLUSTERING) {
+                    markerLayer.addLayer(markerEntry.marker);
+                } else {
+                    markerEntry.marker.addTo(map);
+                }
+            } else {
+                if (USE_CLUSTERING) {
+                    markerLayer.removeLayer(markerEntry.marker);
+                } else {
+                    map.removeLayer(markerEntry.marker);
+                }
+            }
+        });
+
+        // Show/hide sidebar cards
+        newsCards.forEach(card => {
+            const cardType = card.dataset.type;
+
+            if (selectedType === "all" || cardType === selectedType) {
+                card.style.display = "block";
+            } else {
+                card.style.display = "none";
+            }
+        });
     });
-
-    // Show/hide sidebar cards
-    newsCards.forEach(card => {
-        const cardType = card.dataset.type;
-
-        if (selectedType === "all" || cardType === selectedType) {
-            card.style.display = "block";
-        } else {
-            card.style.display = "none";
-        }
-    });
-});
+}

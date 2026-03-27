@@ -1,0 +1,63 @@
+{% extends "layout.html" %}
+
+{% block title %}{{ form_title }}{% endblock %}
+
+{% block content %}
+<div style="padding: 20px; max-width: 700px;">
+    <h1>{{ form_title }}</h1>
+
+    <form method="POST">
+        <div style="margin-bottom: 12px;">
+            <label>Title</label><br>
+            <input type="text" name="title" required
+                   value="{{ news_item.title if news_item else '' }}" style="width: 100%; padding: 8px;">
+        </div>
+
+        <div style="margin-bottom: 12px;">
+            <label>Description</label><br>
+            <textarea name="description" required style="width: 100%; padding: 8px; height: 120px;">{{ news_item.description if news_item else '' }}</textarea>
+        </div>
+
+        <div style="margin-bottom: 12px;">
+            <label>Latitude</label><br>
+            <input type="number" step="any" name="latitude" required
+                   value="{{ news_item.latitude if news_item else '' }}" style="width: 100%; padding: 8px;">
+        </div>
+
+        <div style="margin-bottom: 12px;">
+            <label>Longitude</label><br>
+            <input type="number" step="any" name="longitude" required
+                   value="{{ news_item.longitude if news_item else '' }}" style="width: 100%; padding: 8px;">
+        </div>
+
+        <div style="margin-bottom: 12px;">
+            <label>Marker Type</label><br>
+            <input type="text" name="marker_type" required
+                   value="{{ news_item.marker_type if news_item else '' }}" style="width: 100%; padding: 8px;">
+        </div>
+
+        <div style="margin-bottom: 12px;">
+            <label>Region Name</label><br>
+            <input type="text" name="region_name"
+                   value="{{ news_item.region_name if news_item else '' }}" style="width: 100%; padding: 8px;">
+        </div>
+
+        <div style="margin-bottom: 12px;">
+            <label>Source URL</label><br>
+            <input type="text" name="source_url"
+                   value="{{ news_item.source_url if news_item else '' }}" style="width: 100%; padding: 8px;">
+        </div>
+
+        <div style="margin-bottom: 12px;">
+            <label>
+                <input type="checkbox" name="is_visible"
+                       {% if news_item and news_item.is_visible %}checked{% endif %}>
+                Visible on public map
+            </label>
+        </div>
+
+        <button type="submit">Save</button>
+        <a href="{{ url_for('admin_news') }}">Cancel</a>
+    </form>
+</div>
+{% endblock %}

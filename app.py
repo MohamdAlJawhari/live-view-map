@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect, url_for
 from extensions import db
 
 app = Flask(__name__)
@@ -40,6 +40,58 @@ def index():
         news_data=news_data,
         marker_types=sorted(marker_types)
     )
+
+@app.route("/admin/news")
+def admin_news():
+    all_news = News.query.order_by(News.id.desc()).all()
+    return render_template("admin_news.html", news_items=all_news)
+
+@app.route("/admin/news/add", methods=["GET", "POST"])
+def add_news():
+    if request.method == "POST":
+        new_item = News(
+            title=request.form["title"],
+            description=request.form["description"],
+            latitude=float(request.form["latitude"]),
+            longitude=float(request.form["longitude"]),
+            marker_type=request.form["marker_type"],
+            region_name=request.form["region_name"],
+            source_url=request.form["source_url"],
+            is_visible="is_visible" in request.form
+        )
+        db.session.add(new_item)
+        db.session.commit()
+        return redirect(url_for("admin_news"))
+
+    return render_template("news_form.html", form_title="Add News", news_item=None)
+
+
+@app.route("/admin/news/edit/<int:news_id>", methods=["GET", "POST"])
+def edit_news(news_id):
+    news_item = News.query.get_or_404(news_id)
+
+    if request.method == "POST":
+        news_item.title = request.form["title"]
+        news_item.description = request.form["description"]
+        news_item.latitude = float(request.form["latitude"])
+        news_item.longitude = float(request.form["longitude"])
+        news_item.marker_type = request.form["marker_type"]
+        news_item.region_name = request.form["region_name"]
+        news_item.source_url = request.form["source_url"]
+        news_item.is_visible = "is_visible" in request.form
+
+        db.session.commit()
+        return redirect(url_for("admin_news"))
+
+    return render_template("news_form.html", form_title="Edit News", news_item=news_item)
+
+
+@app.route("/admin/news/delete/<int:news_id>", methods=["POST"])
+def delete_news(news_id):
+    news_item = News.query.get_or_404(news_id)
+    db.session.delete(news_item)
+    db.session.commit()
+    return redirect(url_for("admin_news"))
 
 
 if __name__ == "__main__":
