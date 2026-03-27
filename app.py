@@ -1,7 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for
-from extensions import db
+from extensions import db, login_manager
+from flask_login import login_user, logout_user, login_required, current_user
+from werkzeug.security import check_password_hash
 
 app = Flask(__name__)
+app.secret_key = "super-secret-key-change-this"
 
 # Database configuration
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///news.db"
@@ -9,6 +12,9 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 # Connect db to app
 db.init_app(app)
+login_manager.init_app(app)
+
+login_manager.login_view = "login"  # redirect if not logged in
 
 # Import models after db is created
 from models import News
@@ -42,11 +48,13 @@ def index():
     )
 
 @app.route("/admin/news")
+@login_required
 def admin_news():
     all_news = News.query.order_by(News.id.desc()).all()
     return render_template("admin_news.html", news_items=all_news)
 
 @app.route("/admin/news/add", methods=["GET", "POST"])
+@login_required     
 def add_news():
     if request.method == "POST":
         new_item = News(
@@ -67,6 +75,7 @@ def add_news():
 
 
 @app.route("/admin/news/edit/<int:news_id>", methods=["GET", "POST"])
+@login_required
 def edit_news(news_id):
     news_item = News.query.get_or_404(news_id)
 
@@ -87,11 +96,38 @@ def edit_news(news_id):
 
 
 @app.route("/admin/news/delete/<int:news_id>", methods=["POST"])
+@login_required
 def delete_news(news_id):
     news_item = News.query.get_or_404(news_id)
     db.session.delete(news_item)
     db.session.commit()
     return redirect(url_for("admin_news"))
+
+
+from models import User
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        user = User.query.filter_by(username=request.form["username"]).first()
+
+        if user and check_password_hash(user.password, request.form["password"]):
+            login_user(user)
+            return redirect(url_for("admin_news"))
+
+        return "Invalid credentials"
+
+    return render_template("login.html")
+
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for("login"))
 
 
 if __name__ == "__main__":

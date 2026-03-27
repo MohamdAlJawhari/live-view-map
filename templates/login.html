@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div style="padding: 40px; max-width: 400px; margin: auto;">
+    <h2>Admin Login</h2>
+
+    <form method="POST">
+        <div style="margin-bottom: 12px;">
+            <input type="text" name="username" placeholder="Username" required style="width: 100%; padding: 8px;">
+        </div>
+
+        <div style="margin-bottom: 12px;">
+            <input type="password" name="password" placeholder="Password" required style="width: 100%; padding: 8px;">
+        </div>
+
+        <button type="submit">Login</button>
+    </form>
+</div>
+{% endblock %}
