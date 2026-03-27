@@ -7,10 +7,22 @@
     <div class="sidebar">
         <h2>Latest News</h2>
 
+        <div class="filter-box">
+            <label for="type-filter"><strong>Filter by type:</strong></label>
+            <select id="type-filter">
+                <option value="all">All types</option>
+                {% for marker_type in marker_types %}
+                    <option value="{{ marker_type }}">{{ marker_type }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
         <div id="news-list">
             {% if news_data %}
                 {% for item in news_data %}
-                    <div class="news-card" data-id="{{ item.id }}">
+                    <div class="news-card"
+                         data-id="{{ item.id }}"
+                         data-type="{{ item.marker_type }}">
                         <h3>{{ item.title }}</h3>
                         <p><strong>Type:</strong> {{ item.marker_type }}</p>
                         <p><strong>Region:</strong> {{ item.region_name or "Unknown" }}</p>

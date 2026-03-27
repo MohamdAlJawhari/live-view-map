@@ -18,6 +18,8 @@ def index():
     news_items = News.query.filter_by(is_visible=True).all()
 
     news_data = []
+    marker_types = set()
+
     for item in news_items:
         news_data.append({
             "id": item.id,
@@ -30,10 +32,13 @@ def index():
             "source_url": item.source_url,
         })
 
+        marker_types.add(item.marker_type)
+
     return render_template(
         "index.html",
         page_title="Live View Map",
-        news_data=news_data
+        news_data=news_data,
+        marker_types=sorted(marker_types)
     )
 
 

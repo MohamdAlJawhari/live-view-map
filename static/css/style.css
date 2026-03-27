@@ -52,3 +52,14 @@ html, body {
     flex: 1;
     height: 100%;
 }
+
+.filter-box {
+    margin-bottom: 16px;
+}
+
+.filter-box select {
+    width: 100%;
+    padding: 8px;
+    margin-top: 6px;
+    box-sizing: border-box;
+}
