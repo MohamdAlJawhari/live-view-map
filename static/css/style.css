@@ -11,12 +11,41 @@ html, body {
 }
 
 .sidebar {
-    width: 300px;
+    width: 320px;
     background: #f4f4f4;
     padding: 20px;
     box-sizing: border-box;
     overflow-y: auto;
     border-right: 1px solid #ccc;
+}
+
+.sidebar h2 {
+    margin-top: 0;
+}
+
+.news-card {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.news-card:hover {
+    background: #f0f7ff;
+    border-color: #999;
+}
+
+.news-card h3 {
+    margin: 0 0 8px;
+    font-size: 16px;
+}
+
+.news-card p {
+    margin: 4px 0;
+    font-size: 14px;
 }
 
 #map {

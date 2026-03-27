@@ -13,10 +13,28 @@ db.init_app(app)
 # Import models after db is created
 from models import News
 
-
 @app.route("/")
 def index():
-    return render_template("index.html", page_title="Live View Map")
+    news_items = News.query.filter_by(is_visible=True).all()
+
+    news_data = []
+    for item in news_items:
+        news_data.append({
+            "id": item.id,
+            "title": item.title,
+            "description": item.description,
+            "latitude": item.latitude,
+            "longitude": item.longitude,
+            "marker_type": item.marker_type,
+            "region_name": item.region_name,
+            "source_url": item.source_url,
+        })
+
+    return render_template(
+        "index.html",
+        page_title="Live View Map",
+        news_data=news_data
+    )
 
 
 if __name__ == "__main__":

@@ -6,9 +6,27 @@
 <div class="page-container">
     <div class="sidebar">
         <h2>Latest News</h2>
-        <p>No news yet.</p>
+
+        <div id="news-list">
+            {% if news_data %}
+                {% for item in news_data %}
+                    <div class="news-card" data-id="{{ item.id }}">
+                        <h3>{{ item.title }}</h3>
+                        <p><strong>Type:</strong> {{ item.marker_type }}</p>
+                        <p><strong>Region:</strong> {{ item.region_name or "Unknown" }}</p>
+                        <p>{{ item.description }}</p>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No news available.</p>
+            {% endif %}
+        </div>
     </div>
 
     <div id="map"></div>
 </div>
+
+<script>
+    const newsData = {{ news_data | tojson }};
+</script>
 {% endblock %}
