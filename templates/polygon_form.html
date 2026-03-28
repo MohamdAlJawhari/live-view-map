@@ -1,0 +1,44 @@
+{% extends "layout.html" %}
+
+{% block title %}{{ form_title }}{% endblock %}
+
+{% block content %}
+<div style="padding: 20px; max-width: 800px;">
+    <h1>{{ form_title }}</h1>
+
+    <form method="POST">
+        <div style="margin-bottom: 12px;">
+            <label>Name</label><br>
+            <input type="text"
+                   name="name"
+                   required
+                   value="{{ polygon.name if polygon else '' }}"
+                   style="width: 100%; padding: 8px;">
+        </div>
+
+        <div style="margin-bottom: 12px;">
+            <label>Color</label><br>
+            <input type="text"
+                   name="color"
+                   required
+                   value="{{ polygon.color if polygon else 'red' }}"
+                   style="width: 100%; padding: 8px;">
+        </div>
+
+        <div style="margin-bottom: 12px;">
+            <label>Coordinates (JSON format)</label><br>
+            <textarea name="coordinates"
+                      required
+                      style="width: 100%; padding: 8px; height: 180px;">{{ polygon.coordinates if polygon else '[[33.80, 35.40], [33.90, 35.50], [33.85, 35.65]]' }}</textarea>
+        </div>
+
+        <p>
+            Example:
+            <code>[[33.80, 35.40], [33.90, 35.50], [33.85, 35.65]]</code>
+        </p>
+
+        <button type="submit">Save</button>
+        <a href="{{ url_for('admin_polygons') }}">Cancel</a>
+    </form>
+</div>
+{% endblock %}

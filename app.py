@@ -3,6 +3,7 @@ from flask import Flask, render_template, request, redirect, url_for
 from extensions import db, login_manager
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import check_password_hash
+import json
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "dev-key")
@@ -62,6 +63,7 @@ def index():
         polygons=polygon_data
     )
 
+# Admin routes for news management
 @app.route("/admin/news")
 @login_required
 def admin_news():
@@ -117,6 +119,72 @@ def delete_news(news_id):
     db.session.delete(news_item)
     db.session.commit()
     return redirect(url_for("admin_news"))
+
+# Polygon management routes
+@app.route("/admin/polygons")
+@login_required
+def admin_polygons():
+    polygons = Polygon.query.order_by(Polygon.id.desc()).all()
+    return render_template("admin_polygons.html", polygons=polygons)
+
+
+@app.route("/admin/polygons/add", methods=["GET", "POST"])
+@login_required
+def add_polygon():
+    if request.method == "POST":
+        name = request.form["name"]
+        color = request.form["color"]
+        coordinates_text = request.form["coordinates"].strip()
+
+        try:
+            coordinates_list = json.loads(coordinates_text)
+
+            new_polygon = Polygon(
+                name=name,
+                color=color,
+                coordinates=json.dumps(coordinates_list)
+            )
+
+            db.session.add(new_polygon)
+            db.session.commit()
+            return redirect(url_for("admin_polygons"))
+
+        except json.JSONDecodeError:
+            return "Invalid JSON format for coordinates."
+
+    return render_template("polygon_form.html", form_title="Add Polygon", polygon=None)
+
+
+@app.route("/admin/polygons/edit/<int:polygon_id>", methods=["GET", "POST"])
+@login_required
+def edit_polygon(polygon_id):
+    polygon = Polygon.query.get_or_404(polygon_id)
+
+    if request.method == "POST":
+        polygon.name = request.form["name"]
+        polygon.color = request.form["color"]
+        coordinates_text = request.form["coordinates"].strip()
+
+        try:
+            coordinates_list = json.loads(coordinates_text)
+            polygon.coordinates = json.dumps(coordinates_list)
+
+            db.session.commit()
+            return redirect(url_for("admin_polygons"))
+
+        except json.JSONDecodeError:
+            return "Invalid JSON format for coordinates."
+
+    return render_template("polygon_form.html", form_title="Edit Polygon", polygon=polygon)
+
+
+@app.route("/admin/polygons/delete/<int:polygon_id>", methods=["POST"])
+@login_required
+def delete_polygon(polygon_id):
+    polygon = Polygon.query.get_or_404(polygon_id)
+    db.session.delete(polygon)
+    db.session.commit()
+    return redirect(url_for("admin_polygons"))
 
 
 from models import User
