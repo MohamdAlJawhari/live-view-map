@@ -1,6 +1,7 @@
 from datetime import datetime
 from extensions import db
 from flask_login import UserMixin
+import json
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -22,3 +23,12 @@ class News(db.Model):
 
     def __repr__(self):
         return f"<News {self.title}>"
+
+class Polygon(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(200), nullable=False)
+    color = db.Column(db.String(20), default="red")
+    coordinates = db.Column(db.Text, nullable=False)  # store JSON string
+
+    def get_coordinates(self):
+        return json.loads(self.coordinates)

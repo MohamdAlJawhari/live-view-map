@@ -1,10 +1,11 @@
+import os
 from flask import Flask, render_template, request, redirect, url_for
 from extensions import db, login_manager
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import check_password_hash
 
 app = Flask(__name__)
-app.secret_key = "super-secret-key-change-this"
+app.secret_key = os.environ.get("SECRET_KEY", "dev-key")
 
 # Database configuration
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///news.db"
@@ -17,10 +18,11 @@ login_manager.init_app(app)
 login_manager.login_view = "login"  # redirect if not logged in
 
 # Import models after db is created
-from models import News
+from models import News, Polygon
 
 @app.route("/")
 def index():
+# Fetch news items from the database
     news_items = News.query.filter_by(is_visible=True).all()
 
     news_data = []
@@ -40,11 +42,24 @@ def index():
 
         marker_types.add(item.marker_type)
 
+# Add polygon data to the index route
+    polygons = Polygon.query.all()
+
+    polygon_data = []
+    for p in polygons:
+        polygon_data.append({
+            "id": p.id,
+            "name": p.name,
+            "color": p.color,
+            "coordinates": p.get_coordinates()
+        })
+
     return render_template(
         "index.html",
         page_title="Live View Map",
         news_data=news_data,
-        marker_types=sorted(marker_types)
+        marker_types=sorted(marker_types),
+        polygons=polygon_data
     )
 
 @app.route("/admin/news")

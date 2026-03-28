@@ -51,6 +51,18 @@ if (typeof newsData !== "undefined" && Array.isArray(newsData)) {
     });
 }
 
+// Add polygons from database
+if (typeof polygons !== "undefined") {
+    polygons.forEach(p => {
+        const polygon = L.polygon(p.coordinates, {
+            color: p.color,
+            fillOpacity: 0.3
+        }).addTo(map);
+
+        polygon.bindPopup(`<strong>${p.name}</strong>`);
+    });
+}
+
 // Make sidebar cards clickable
 newsCards.forEach(card => {
     card.addEventListener("click", () => {
