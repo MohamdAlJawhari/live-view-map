@@ -120,6 +120,7 @@ def delete_news(news_id):
     db.session.commit()
     return redirect(url_for("admin_news"))
 
+
 # Polygon management routes
 @app.route("/admin/polygons")
 @login_required
@@ -185,6 +186,33 @@ def delete_polygon(polygon_id):
     db.session.delete(polygon)
     db.session.commit()
     return redirect(url_for("admin_polygons"))
+
+
+@app.route("/admin/polygons/draw", methods=["GET", "POST"])
+@login_required
+def draw_polygon():
+    if request.method == "POST":
+        name = request.form["name"]
+        color = request.form["color"]
+        coordinates_text = request.form["coordinates"].strip()
+
+        try:
+            coordinates_list = json.loads(coordinates_text)
+
+            new_polygon = Polygon(
+                name=name,
+                color=color,
+                coordinates=json.dumps(coordinates_list)
+            )
+
+            db.session.add(new_polygon)
+            db.session.commit()
+            return redirect(url_for("admin_polygons"))
+
+        except json.JSONDecodeError:
+            return "Invalid polygon coordinates."
+
+    return render_template("draw_polygon.html")
 
 
 from models import User

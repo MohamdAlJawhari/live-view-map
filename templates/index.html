@@ -39,8 +39,16 @@
     <div id="map"></div>
 </div>
 
+<!-- <script>
+    const newsData = {{ news_data | tojson }};
+    const polygons = {{ polygons | tojson }};
+</script> -->
+{% endblock %}
+
+{% block scripts %}
 <script>
     const newsData = {{ news_data | tojson }};
     const polygons = {{ polygons | tojson }};
 </script>
+<script src="{{ url_for('static', filename='js/map.js') }}"></script>
 {% endblock %}
