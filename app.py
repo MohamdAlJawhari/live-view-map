@@ -215,6 +215,36 @@ def draw_polygon():
     return render_template("draw_polygon.html")
 
 
+@app.route("/admin/polygons/edit-map/<int:polygon_id>", methods=["GET", "POST"])
+@login_required
+def edit_polygon_map(polygon_id):
+    polygon = Polygon.query.get_or_404(polygon_id)
+
+    if request.method == "POST":
+        polygon.name = request.form["name"]
+        polygon.color = request.form["color"]
+
+        coordinates_text = request.form["coordinates"].strip()
+
+        try:
+            coordinates_list = json.loads(coordinates_text)
+            polygon.coordinates = json.dumps(coordinates_list)
+
+            db.session.commit()
+            return redirect(url_for("admin_polygons"))
+        except json.JSONDecodeError:
+            return "Invalid polygon coordinates."
+
+    polygon_data = {
+        "id": polygon.id,
+        "name": polygon.name,
+        "color": polygon.color,
+        "coordinates": polygon.get_coordinates()
+    }
+
+    return render_template("edit_polygon_map.html", polygon=polygon_data)
+
+
 from models import User
 
 @login_manager.user_loader

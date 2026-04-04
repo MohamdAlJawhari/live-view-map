@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+
+{% block title %}Edit Polygon on Map{% endblock %}
+
+{% block content %}
+<div style="padding: 20px;">
+    <h1>Edit Polygon on Map</h1>
+
+    <form method="POST" style="margin-bottom: 20px; max-width: 500px;">
+        <div style="margin-bottom: 12px;">
+            <label>Name</label><br>
+            <input type="text" name="name" value="{{ polygon.name }}" required style="width: 100%; padding: 8px;">
+        </div>
+
+        <div style="margin-bottom: 12px;">
+            <label>Color</label><br>
+            <input type="text" name="color" value="{{ polygon.color }}" required style="width: 100%; padding: 8px;">
+        </div>
+
+        <div style="margin-bottom: 12px;">
+            <label>Coordinates</label><br>
+            <textarea id="coordinates" name="coordinates" required readonly
+                      style="width: 100%; padding: 8px; height: 120px;">{{ polygon.coordinates | tojson | safe }}</textarea>
+        </div>
+
+        <button type="submit">Save Changes</button>
+        <a href="{{ url_for('admin_polygons') }}">Cancel</a>
+    </form>
+
+    <div id="edit-map" style="height: 600px; border: 1px solid #ccc;"></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const polygonData = {{ polygon | tojson }};
+</script>
+<script src="{{ url_for('static', filename='js/edit_polygon_map.js') }}"></script>
+{% endblock %}
