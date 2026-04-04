@@ -9,7 +9,8 @@
     <p>
         <a href="{{ url_for('add_polygon') }}">Add New Polygon (JSON)</a> |
         <a href="{{ url_for('draw_polygon') }}">Draw Polygon on Map</a> |
-        <a href="{{ url_for('admin_news') }}">Manage News</a>
+        <a href="{{ url_for('admin_news') }}">Manage News</a> |
+        <a href="{{ url_for('polygons_map') }}">Manage on Map</a>
     </p>
 
     {% if polygons %}

@@ -215,6 +215,55 @@ def draw_polygon():
     return render_template("draw_polygon.html")
 
 
+@app.route("/admin/polygons/map", methods=["GET", "POST"])
+@login_required
+def polygons_map():
+    if request.method == "POST":
+        import json
+
+        data = json.loads(request.form["data"])
+
+        # Handle created
+        for p in data.get("created", []):
+            new_polygon = Polygon(
+                name=p["name"],
+                color=p["color"],
+                coordinates=json.dumps(p["coordinates"])
+            )
+            db.session.add(new_polygon)
+
+        # Handle updated
+        for p in data.get("updated", []):
+            polygon = Polygon.query.get(p["id"])
+            if polygon:
+                polygon.name = p["name"]
+                polygon.color = p["color"]
+                polygon.coordinates = json.dumps(p["coordinates"])
+
+        # Handle deleted
+        for p_id in data.get("deleted", []):
+            polygon = Polygon.query.get(p_id)
+            if polygon:
+                db.session.delete(polygon)
+
+        db.session.commit()
+        return redirect(url_for("admin_polygons"))
+
+    polygons = Polygon.query.all()
+
+    polygon_data = [
+        {
+            "id": p.id,
+            "name": p.name,
+            "color": p.color,
+            "coordinates": p.get_coordinates()
+        }
+        for p in polygons
+    ]
+
+    return render_template("polygons_map.html", polygons=polygon_data)
+
+
 @app.route("/admin/polygons/edit-map/<int:polygon_id>", methods=["GET", "POST"])
 @login_required
 def edit_polygon_map(polygon_id):

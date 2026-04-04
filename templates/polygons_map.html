@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div style="padding: 20px;">
+    <h1>Polygon Map Manager</h1>
+
+    <form method="POST" id="save-form">
+        <input type="hidden" name="data" id="map-data">
+
+        <button type="submit">Save All Changes</button>
+        <a href="{{ url_for('admin_polygons') }}">Back</a>
+    </form>
+
+    <div id="admin-map" style="height: 600px; margin-top: 20px;"></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const polygons = {{ polygons | tojson }};
+</script>
+<script src="{{ url_for('static', filename='js/polygons_map.js') }}"></script>
+{% endblock %}
