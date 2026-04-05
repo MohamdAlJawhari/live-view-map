@@ -22,7 +22,9 @@ if (USE_CLUSTERING) {
 // Add markers from database
 if (typeof newsData !== "undefined" && Array.isArray(newsData)) {
     newsData.forEach(item => {
-        const marker = L.marker([item.latitude, item.longitude]);
+        const marker = L.marker([item.latitude, item.longitude], {
+            icon: getMarkerIcon(item.marker_type)
+        });
 
         marker.bindPopup(`
             <div>
@@ -30,11 +32,10 @@ if (typeof newsData !== "undefined" && Array.isArray(newsData)) {
                 <p><strong>Type:</strong> ${item.marker_type}</p>
                 <p><strong>Region:</strong> ${item.region_name || "Unknown"}</p>
                 <p>${item.description}</p>
-                ${
-                    item.source_url
-                        ? `<p><a href="${item.source_url}" target="_blank">Read source</a></p>`
-                        : ""
-                }
+                ${item.source_url
+                ? `<p><a href="${item.source_url}" target="_blank">Read source</a></p>`
+                : ""
+            }
             </div>
         `);
 
@@ -112,5 +113,17 @@ if (typeFilter) {
                 card.style.display = "none";
             }
         });
+    });
+}
+
+function getMarkerIcon(type) {
+    const allowedTypes = ["rocket", "fire", "warning", "protest","rocket","drone","bomb"];
+    const iconName = allowedTypes.includes(type) ? type : "default";
+
+    return L.icon({
+        iconUrl: `/static/icons/${iconName}.svg`,
+        iconSize: [32, 32],
+        iconAnchor: [16, 32],
+        popupAnchor: [0, -32]
     });
 }

@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+
+{% block title %}Marker Map Manager{% endblock %}
+
+{% block content %}
+<div style="padding: 20px;">
+    <h1>Marker Map Manager</h1>
+
+    <form method="POST" id="save-form">
+        <input type="hidden" name="data" id="map-data">
+        <button type="submit">Save All Changes</button>
+        <a href="{{ url_for('admin_news') }}">Back</a>
+    </form>
+
+    <p style="margin-top: 10px;">
+        Click on the map to add a new marker. Drag markers to move them.
+    </p>
+
+    <div id="admin-markers-map" style="height: 650px; margin-top: 20px; border: 1px solid #ccc;"></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const markersData = {{ markers_data | tojson }};
+</script>
+<script src="{{ url_for('static', filename='js/markers_map.js') }}"></script>
+{% endblock %}

@@ -7,8 +7,9 @@
     <h1>Manage News</h1>
 
     <p>
-        <a href="{{ url_for('add_news') }}">Add New News Item</a>
-        <a href="{{ url_for('admin_polygons') }}">Manage Polygons</a>
+        <a href="{{ url_for('add_news') }}">Add New News Item</a> |
+        <a href="{{ url_for('admin_polygons') }}">Manage Polygons</a> |
+        <a href="{{ url_for('markers_map') }}">Manage Markers on Map</a> |
     </p>
 
     {% if news_items %}

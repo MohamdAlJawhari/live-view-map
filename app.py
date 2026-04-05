@@ -121,6 +121,68 @@ def delete_news(news_id):
     return redirect(url_for("admin_news"))
 
 
+# Map-based marker management route
+@app.route("/admin/markers/map", methods=["GET", "POST"])
+@login_required
+def markers_map():
+    if request.method == "POST":
+        data = json.loads(request.form["data"])
+
+        # Create new markers
+        for item in data.get("created", []):
+            news = News(
+                title=item["title"],
+                description=item["description"],
+                latitude=item["latitude"],
+                longitude=item["longitude"],
+                marker_type=item["marker_type"],
+                region_name=item.get("region_name", ""),
+                source_url=item.get("source_url", ""),
+                is_visible=item.get("is_visible", True)
+            )
+            db.session.add(news)
+
+        # Update existing markers
+        for item in data.get("updated", []):
+            news = News.query.get(item["id"])
+            if news:
+                news.title = item["title"]
+                news.description = item["description"]
+                news.latitude = item["latitude"]
+                news.longitude = item["longitude"]
+                news.marker_type = item["marker_type"]
+                news.region_name = item.get("region_name", "")
+                news.source_url = item.get("source_url", "")
+                news.is_visible = item.get("is_visible", True)
+
+        # Delete markers
+        for item_id in data.get("deleted", []):
+            news = News.query.get(item_id)
+            if news:
+                db.session.delete(news)
+
+        db.session.commit()
+        return redirect(url_for("admin_news"))
+
+    news_items = News.query.all()
+
+    markers_data = []
+    for item in news_items:
+        markers_data.append({
+            "id": item.id,
+            "title": item.title,
+            "description": item.description,
+            "latitude": item.latitude,
+            "longitude": item.longitude,
+            "marker_type": item.marker_type,
+            "region_name": item.region_name,
+            "source_url": item.source_url,
+            "is_visible": item.is_visible
+        })
+
+    return render_template("markers_map.html", markers_data=markers_data)
+
+
 # Polygon management routes
 @app.route("/admin/polygons")
 @login_required
