@@ -7,10 +7,10 @@
     <h1>Manage Polygons</h1>
 
     <p>
-        <a href="{{ url_for('add_polygon') }}">Add New Polygon (JSON)</a> |
-        <a href="{{ url_for('draw_polygon') }}">Draw Polygon on Map</a> |
-        <a href="{{ url_for('admin_news') }}">Manage News</a> |
-        <a href="{{ url_for('polygons_map') }}">Manage on Map</a>
+        <a href="{{ url_for('polygons.add_polygon') }}">Add New Polygon (JSON)</a> |
+        <a href="{{ url_for('polygons.draw_polygon') }}">Draw Polygon on Map</a> |
+        <a href="{{ url_for('news.admin_news') }}">Manage News</a> |
+        <a href="{{ url_for('polygons.polygons_map') }}">Manage on Map</a>
     </p>
 
     {% if polygons %}
@@ -34,11 +34,11 @@
                             {{ polygon.coordinates }}
                         </td>
                         <td>
-                            <a href="{{ url_for('edit_polygon', polygon_id=polygon.id) }}">Edit Form</a>
+                            <a href="{{ url_for('polygons.edit_polygon', polygon_id=polygon.id) }}">Edit Form</a>
                             |
-                            <a href="{{ url_for('edit_polygon_map', polygon_id=polygon.id) }}">Edit on Map</a>
+                            <a href="{{ url_for('polygons.edit_polygon_map', polygon_id=polygon.id) }}">Edit on Map</a>
                             |
-                            <form action="{{ url_for('delete_polygon', polygon_id=polygon.id) }}"
+                            <form action="{{ url_for('polygons.delete_polygon', polygon_id=polygon.id) }}"
                                 method="POST"
                                 style="display: inline;">
                                 <button type="submit"
