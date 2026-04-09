@@ -1,0 +1,42 @@
+@media (max-width: 960px) {
+    .page-container {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        border-right: 0;
+        border-bottom: 1px solid #dbe3f1;
+    }
+
+    #map {
+        min-height: 55vh;
+    }
+}
+
+@media (max-width: 720px) {
+    .app-nav__inner {
+        gap: 6px;
+    }
+
+    .nav-item {
+        width: calc(25% - 6px);
+        min-width: 86px;
+    }
+
+    .page-shell,
+    .form-shell {
+        padding: 20px 14px 28px;
+    }
+
+    .page-card,
+    .form-card,
+    .map-card,
+    .login-card {
+        padding: 18px;
+    }
+
+    .map-frame {
+        height: 520px;
+    }
+}

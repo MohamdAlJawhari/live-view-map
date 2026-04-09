@@ -1,0 +1,76 @@
+.page-container {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+}
+
+.sidebar {
+    width: 320px;
+    background: #ffffff;
+    padding: 24px;
+    box-sizing: border-box;
+    overflow-y: auto;
+    border-right: 1px solid #dbe3f1;
+}
+
+.sidebar h2 {
+    margin: 0 0 18px;
+}
+
+.filter-box {
+    margin-bottom: 18px;
+}
+
+.filter-box label {
+    display: block;
+    color: #43536c;
+}
+
+.filter-box select,
+.field input,
+.field textarea {
+    width: 100%;
+    padding: 10px 12px;
+    box-sizing: border-box;
+    border: 1px solid #ccd8eb;
+    border-radius: 12px;
+    background: #ffffff;
+    color: #23344d;
+    font: inherit;
+}
+
+.field textarea {
+    min-height: 130px;
+    resize: vertical;
+}
+
+.news-card {
+    background: #ffffff;
+    border: 1px solid #d9e3f2;
+    border-radius: 16px;
+    padding: 14px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.news-card:hover {
+    background: #f5f9ff;
+    border-color: #9db7ff;
+    transform: translateY(-1px);
+}
+
+.news-card h3 {
+    margin: 0 0 8px;
+    font-size: 16px;
+}
+
+.news-card p {
+    margin: 4px 0;
+    font-size: 14px;
+}
+
+#map {
+    flex: 1;
+    min-height: 0;
+}
