@@ -22,7 +22,6 @@
                 <label><strong>Marker Manager:</strong></label>
                 <form method="POST" action="{{ url_for('news.markers_map') }}" id="marker-save-form" class="marker-manager-form">
                     <div class="marker-toolbar">
-                        <button type="button" id="marker-add-button" class="button button-secondary">Add Marker on Map</button>
                         <button type="button" id="marker-delete-button" class="button button-danger" hidden>Delete Selected Marker</button>
                     </div>
 
@@ -69,7 +68,7 @@
                         <p id="marker-position-label" class="note"></p>
                     </div>
 
-                    <p id="marker-details-hint" class="note">Click "Add Marker on Map", then click on the map, or click an existing marker to edit.</p>
+                    <p id="marker-details-hint" class="note">Use the marker tool in the map toolbar, or click an existing marker to edit.</p>
                     <input type="hidden" name="data" id="marker-map-data">
                     <input type="hidden" name="next" value="{{ url_for('main.index') }}">
                     <button type="submit" class="button">Save Marker Changes</button>

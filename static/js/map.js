@@ -8,14 +8,11 @@ const CAN_MANAGE_MARKERS = typeof canManageMarkers === "boolean" ? canManageMark
 const CAN_MANAGE_POLYGONS = typeof canManagePolygons === "boolean" ? canManagePolygons : false;
 const USE_CLUSTERING = !CAN_MANAGE_MARKERS && (typeof useClustering === "boolean" ? useClustering : true);
 
-const MARKER_HINT_DEFAULT = 'Click "Add Marker on Map", then click on the map, or click an existing marker to edit.';
-
 const newsList = document.getElementById("news-list");
 const typeFilter = document.getElementById("type-filter");
 
 const markerSaveForm = document.getElementById("marker-save-form");
 const markerMapDataInput = document.getElementById("marker-map-data");
-const markerAddButton = document.getElementById("marker-add-button");
 const markerDeleteButton = document.getElementById("marker-delete-button");
 const markerDetailsPanel = document.getElementById("marker-details-panel");
 const markerDetailsHint = document.getElementById("marker-details-hint");
@@ -45,7 +42,6 @@ const deletedPolygonIds = new Set();
 
 let markerLayer;
 let activeMarker = null;
-let awaitingMarkerPlacement = false;
 let nextTempMarkerId = -1;
 
 let activePolygonLayer = null;
@@ -70,7 +66,7 @@ if (drawnItems) {
             rectangle: false,
             circle: false,
             circlemarker: false,
-            marker: false,
+            marker: CAN_MANAGE_MARKERS,
             polyline: false
         }
     });
@@ -336,30 +332,6 @@ function updateMarkerPositionLabel(data) {
     markerPositionLabel.textContent = `Lat: ${Number(data.latitude).toFixed(6)} | Lng: ${Number(data.longitude).toFixed(6)}`;
 }
 
-function refreshMarkerHint() {
-    if (!markerDetailsHint || markerDetailsHint.hidden) {
-        return;
-    }
-
-    if (awaitingMarkerPlacement) {
-        markerDetailsHint.textContent = "Click on the map to place a new marker.";
-    } else {
-        markerDetailsHint.textContent = MARKER_HINT_DEFAULT;
-    }
-}
-
-function setMarkerPlacementMode(enabled) {
-    awaitingMarkerPlacement = enabled;
-
-    if (markerAddButton) {
-        markerAddButton.textContent = enabled ? "Click Map to Place Marker" : "Add Marker on Map";
-        markerAddButton.classList.toggle("button-danger", enabled);
-        markerAddButton.classList.toggle("button-secondary", !enabled);
-    }
-
-    refreshMarkerHint();
-}
-
 function showMarkerDetails(marker) {
     activeMarker = marker;
 
@@ -400,7 +372,6 @@ function showMarkerDetails(marker) {
     }
 
     updateMarkerPositionLabel(marker._data);
-    setMarkerPlacementMode(false);
 }
 
 function hideMarkerDetails() {
@@ -421,8 +392,6 @@ function hideMarkerDetails() {
     if (markerPositionLabel) {
         markerPositionLabel.textContent = "";
     }
-
-    refreshMarkerHint();
 }
 
 function serializeMarkerData(data, includeId) {
@@ -559,12 +528,6 @@ if (Array.isArray(newsData)) {
 }
 
 if (CAN_MANAGE_MARKERS) {
-    if (markerAddButton) {
-        markerAddButton.addEventListener("click", () => {
-            setMarkerPlacementMode(!awaitingMarkerPlacement);
-        });
-    }
-
     if (markerDeleteButton) {
         markerDeleteButton.addEventListener("click", () => {
             if (!activeMarker) {
@@ -612,26 +575,6 @@ if (CAN_MANAGE_MARKERS) {
 
     hideMarkerDetails();
 }
-
-map.on("click", event => {
-    if (!CAN_MANAGE_MARKERS || !awaitingMarkerPlacement) {
-        return;
-    }
-
-    const clickTarget = event.originalEvent && event.originalEvent.target ? event.originalEvent.target : null;
-    if (clickTarget && clickTarget.closest && clickTarget.closest(".leaflet-interactive")) {
-        return;
-    }
-
-    const marker = createMarkerLayer(buildNewMarkerDraft(event.latlng));
-    marker._tempId = `tmp-${L.Util.stamp(marker)}`;
-    createdMarkersByTempId[marker._tempId] = serializeMarkerData(marker._data, false);
-
-    renderNewsCard(marker._data);
-    showMarkerDetails(marker);
-    marker.openPopup();
-    applyTypeFilter();
-});
 
 if (newsList) {
     newsList.addEventListener("click", event => {
@@ -819,6 +762,34 @@ if (Array.isArray(polygons)) {
 if (drawnItems) {
     map.on(L.Draw.Event.CREATED, event => {
         const layer = event.layer;
+
+        if (event.layerType === "marker" && CAN_MANAGE_MARKERS) {
+            const markerData = normalizeMarkerData(buildNewMarkerDraft(layer.getLatLng()));
+
+            layer._data = markerData;
+            layer.setIcon(getMarkerIcon(markerData.marker_type));
+            layer.bindPopup(makeMarkerPopupContent(markerData));
+
+            if (layer.dragging) {
+                layer.dragging.enable();
+            }
+
+            attachManagedMarkerHandlers(layer);
+            showMarker(layer);
+
+            const tempId = `tmp-${L.Util.stamp(layer)}`;
+            layer._tempId = tempId;
+            markersById[String(markerData.id)] = layer;
+            createdMarkersByTempId[tempId] = serializeMarkerData(markerData, false);
+
+            ensureFilterOption(markerData.marker_type);
+            renderNewsCard(markerData);
+            showMarkerDetails(layer);
+            layer.openPopup();
+            applyTypeFilter();
+            return;
+        }
+
         const coordinates = extractPolygonCoordinates(layer);
 
         if (!coordinates) {
@@ -910,4 +881,3 @@ if (drawnItems) {
 }
 
 applyTypeFilter();
-refreshMarkerHint();
