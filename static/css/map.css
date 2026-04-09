@@ -75,10 +75,35 @@
     min-height: 0;
 }
 
+.marker-manager-form,
 .polygon-manager-form {
     display: flex;
     flex-direction: column;
     gap: 10px;
+}
+
+.marker-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.marker-manager-form #marker-details-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.marker-manager-form #marker-details-panel[hidden] {
+    display: none;
+}
+
+.marker-manager-form textarea {
+    min-height: 90px;
+}
+
+.marker-manager-form .button[hidden] {
+    display: none;
 }
 
 .polygon-manager-form .field {

@@ -1,4 +1,5 @@
 from flask import redirect, render_template, request, session, url_for
+from flask_login import current_user
 
 from models import News, Polygon
 
@@ -7,8 +8,10 @@ from . import bp
 
 @bp.route("/")
 def index():
-    # Fetch news items from the database
-    news_items = News.query.filter_by(is_visible=True).all()
+    if current_user.is_authenticated:
+        news_items = News.query.order_by(News.id.desc()).all()
+    else:
+        news_items = News.query.filter_by(is_visible=True).all()
 
     news_data = []
     marker_types = set()
@@ -23,6 +26,7 @@ def index():
             "marker_type": item.marker_type,
             "region_name": item.region_name,
             "source_url": item.source_url,
+            "is_visible": item.is_visible,
         })
 
         marker_types.add(item.marker_type)

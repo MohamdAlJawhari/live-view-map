@@ -107,7 +107,11 @@ def markers_map():
                 db.session.delete(news)
 
         db.session.commit()
-        return redirect(url_for("news.admin_news"))
+        next_path = request.form.get("next") or url_for("news.admin_news")
+        if not next_path.startswith("/"):
+            next_path = url_for("news.admin_news")
+
+        return redirect(next_path)
 
     news_items = News.query.all()
 

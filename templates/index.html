@@ -19,6 +19,64 @@
 
         {% if current_user.is_authenticated %}
             <div class="filter-box">
+                <label><strong>Marker Manager:</strong></label>
+                <form method="POST" action="{{ url_for('news.markers_map') }}" id="marker-save-form" class="marker-manager-form">
+                    <div class="marker-toolbar">
+                        <button type="button" id="marker-add-button" class="button button-secondary">Add Marker on Map</button>
+                        <button type="button" id="marker-delete-button" class="button button-danger" hidden>Delete Selected Marker</button>
+                    </div>
+
+                    <div id="marker-details-panel" hidden>
+                        <div class="field">
+                            <label for="marker-title-input">Title</label>
+                            <input id="marker-title-input" type="text" value="New marker" autocomplete="off">
+                        </div>
+
+                        <div class="field">
+                            <label for="marker-description-input">Description</label>
+                            <textarea id="marker-description-input"></textarea>
+                        </div>
+
+                        <div class="field">
+                            <label for="marker-type-input">Marker type</label>
+                            <input id="marker-type-input" type="text" value="warning" list="marker-type-options" autocomplete="off">
+                            <datalist id="marker-type-options">
+                                <option value="warning"></option>
+                                <option value="rocket"></option>
+                                <option value="fire"></option>
+                                <option value="protest"></option>
+                                <option value="drone"></option>
+                                <option value="bomb"></option>
+                                <option value="airstrike"></option>
+                            </datalist>
+                        </div>
+
+                        <div class="field">
+                            <label for="marker-region-input">Region name</label>
+                            <input id="marker-region-input" type="text" autocomplete="off">
+                        </div>
+
+                        <div class="field">
+                            <label for="marker-source-input">Source URL</label>
+                            <input id="marker-source-input" type="text" autocomplete="off">
+                        </div>
+
+                        <label class="checkbox-row">
+                            <input id="marker-visible-input" type="checkbox" checked>
+                            <span>Visible on public map</span>
+                        </label>
+
+                        <p id="marker-position-label" class="note"></p>
+                    </div>
+
+                    <p id="marker-details-hint" class="note">Click "Add Marker on Map", then click on the map, or click an existing marker to edit.</p>
+                    <input type="hidden" name="data" id="marker-map-data">
+                    <input type="hidden" name="next" value="{{ url_for('main.index') }}">
+                    <button type="submit" class="button">Save Marker Changes</button>
+                </form>
+            </div>
+
+            <div class="filter-box">
                 <label><strong>Polygon Manager:</strong></label>
                 <form method="POST" action="{{ url_for('polygons.polygons_map') }}" id="polygon-save-form" class="polygon-manager-form">
                     <div id="polygon-details-panel" hidden>
@@ -48,6 +106,9 @@
                         <h3>{{ item.title }}</h3>
                         <p><strong>Type:</strong> {{ item.marker_type }}</p>
                         <p><strong>Region:</strong> {{ item.region_name or "Unknown" }}</p>
+                        {% if current_user.is_authenticated %}
+                            <p><strong>Visible:</strong> {{ "Yes" if item.is_visible else "No" }}</p>
+                        {% endif %}
                         <p>{{ item.description }}</p>
                     </div>
                 {% endfor %}
@@ -71,6 +132,7 @@
     const newsData = {{ news_data | tojson }};
     const polygons = {{ polygons | tojson }};
     const useClustering = {{ use_clustering | tojson }};
+    const canManageMarkers = {{ current_user.is_authenticated | tojson }};
     const canManagePolygons = {{ current_user.is_authenticated | tojson }};
 </script>
 <script src="{{ url_for('static', filename='js/map.js') }}"></script>
