@@ -3,31 +3,39 @@
 {% block title %}Draw Polygon{% endblock %}
 
 {% block content %}
-<div style="padding: 20px;">
-    <h1>Draw Polygon</h1>
-
-    <form method="POST" id="polygon-form" style="margin-bottom: 20px; max-width: 500px;">
-        <div style="margin-bottom: 12px;">
-            <label>Name</label><br>
-            <input type="text" name="name" required style="width: 100%; padding: 8px;">
+<div class="page-shell">
+    <section class="map-card">
+        <div class="page-header">
+            <div>
+                <h1>Draw Polygon</h1>
+                <p class="page-subtitle">Trace a polygon on the map, then save the generated coordinates.</p>
+            </div>
         </div>
 
-        <div style="margin-bottom: 12px;">
-            <label>Color</label><br>
-            <input type="text" name="color" value="red" required style="width: 100%; padding: 8px;">
-        </div>
+        <form method="POST" id="polygon-form" class="form-grid compact-form">
+            <div class="field">
+                <label for="name">Name</label>
+                <input id="name" type="text" name="name" required>
+            </div>
 
-        <div style="margin-bottom: 12px;">
-            <label>Coordinates</label><br>
-            <textarea id="coordinates" name="coordinates" required readonly
-                style="width: 100%; padding: 8px; height: 120px;"></textarea>
-        </div>
+            <div class="field">
+                <label for="color">Color</label>
+                <input id="color" type="text" name="color" value="red" required>
+            </div>
 
-        <button type="submit">Save Polygon</button>
-        <a href="{{ url_for('polygons.admin_polygons') }}">Cancel</a>
-    </form>
+            <div class="field">
+                <label for="coordinates">Coordinates</label>
+                <textarea id="coordinates" name="coordinates" required readonly></textarea>
+            </div>
 
-    <div id="draw-map" style="height: 600px; border: 1px solid #ccc;"></div>
+            <div class="form-actions">
+                <button type="submit" class="button">Save Polygon</button>
+                <a href="{{ url_for('polygons.admin_polygons') }}" class="button button-secondary">Cancel</a>
+            </div>
+        </form>
+
+        <div id="draw-map" class="map-frame"></div>
+    </section>
 </div>
 
 <!-- <script src="{{ url_for('static', filename='js/draw_polygon.js') }}"></script> -->

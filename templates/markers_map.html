@@ -3,20 +3,25 @@
 {% block title %}Marker Map Manager{% endblock %}
 
 {% block content %}
-<div style="padding: 20px;">
-    <h1>Marker Map Manager</h1>
+<div class="page-shell">
+    <section class="map-card">
+        <div class="page-header">
+            <div>
+                <h1>Marker Map Manager</h1>
+                <p class="page-subtitle">Add, move, and remove map markers directly from the canvas.</p>
+            </div>
+        </div>
 
-    <form method="POST" id="save-form">
-        <input type="hidden" name="data" id="map-data">
-        <button type="submit">Save All Changes</button>
-        <a href="{{ url_for('news.admin_news') }}">Back</a>
-    </form>
+        <form method="POST" id="save-form" class="map-toolbar">
+            <input type="hidden" name="data" id="map-data">
+            <button type="submit" class="button">Save All Changes</button>
+            <a href="{{ url_for('news.admin_news') }}" class="button button-secondary">Back</a>
+        </form>
 
-    <p style="margin-top: 10px;">
-        Click on the map to add a new marker. Drag markers to move them.
-    </p>
+        <p class="note">Click on the map to add a new marker. Drag markers to move them.</p>
 
-    <div id="admin-markers-map" style="height: 650px; margin-top: 20px; border: 1px solid #ccc;"></div>
+        <div id="admin-markers-map" class="map-frame"></div>
+    </section>
 </div>
 {% endblock %}
 

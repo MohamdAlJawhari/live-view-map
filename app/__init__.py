@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, session
 from config import Config
 from extensions import db, login_manager
 
@@ -24,5 +24,14 @@ def create_app(config_class=Config):
     app.register_blueprint(news_bp)
     app.register_blueprint(polygons_bp)
     app.register_blueprint(auth_bp)
+
+    @app.context_processor
+    def inject_ui_settings():
+        return {
+            "use_clustering": session.get(
+                "use_clustering",
+                app.config.get("USE_CLUSTERING", True),
+            )
+        }
 
     return app

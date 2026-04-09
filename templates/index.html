@@ -6,8 +6,7 @@
 <div class="page-container">
     <div class="sidebar">
         <h2>Latest News</h2>
-        <p><a href="{{ url_for('news.admin_news') }}">Manage News</a></p>
-        
+
         <div class="filter-box">
             <label for="type-filter"><strong>Filter by type:</strong></label>
             <select id="type-filter">
@@ -49,6 +48,7 @@
 <script>
     const newsData = {{ news_data | tojson }};
     const polygons = {{ polygons | tojson }};
+    const useClustering = {{ use_clustering | tojson }};
 </script>
 <script src="{{ url_for('static', filename='js/map.js') }}"></script>
 {% endblock %}

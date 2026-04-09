@@ -3,42 +3,41 @@
 {% block title %}{{ form_title }}{% endblock %}
 
 {% block content %}
-<div style="padding: 20px; max-width: 800px;">
-    <h1>{{ form_title }}</h1>
-
-    <form method="POST">
-        <div style="margin-bottom: 12px;">
-            <label>Name</label><br>
-            <input type="text"
-                   name="name"
-                   required
-                   value="{{ polygon.name if polygon else '' }}"
-                   style="width: 100%; padding: 8px;">
+<div class="form-shell">
+    <section class="form-card">
+        <div class="page-header">
+            <div>
+                <h1>{{ form_title }}</h1>
+                <p class="page-subtitle">Edit polygon metadata directly as JSON coordinates when you need precise control.</p>
+            </div>
         </div>
 
-        <div style="margin-bottom: 12px;">
-            <label>Color</label><br>
-            <input type="text"
-                   name="color"
-                   required
-                   value="{{ polygon.color if polygon else 'red' }}"
-                   style="width: 100%; padding: 8px;">
-        </div>
+        <form method="POST" class="form-grid">
+            <div class="field">
+                <label for="name">Name</label>
+                <input id="name" type="text" name="name" required value="{{ polygon.name if polygon else '' }}">
+            </div>
 
-        <div style="margin-bottom: 12px;">
-            <label>Coordinates (JSON format)</label><br>
-            <textarea name="coordinates"
-                      required
-                      style="width: 100%; padding: 8px; height: 180px;">{{ polygon.coordinates if polygon else '[[33.80, 35.40], [33.90, 35.50], [33.85, 35.65]]' }}</textarea>
-        </div>
+            <div class="field">
+                <label for="color">Color</label>
+                <input id="color" type="text" name="color" required value="{{ polygon.color if polygon else 'red' }}">
+            </div>
 
-        <p>
-            Example:
-            <code>[[33.80, 35.40], [33.90, 35.50], [33.85, 35.65]]</code>
-        </p>
+            <div class="field">
+                <label for="coordinates">Coordinates (JSON format)</label>
+                <textarea id="coordinates" name="coordinates" required>{{ polygon.coordinates if polygon else '[[33.80, 35.40], [33.90, 35.50], [33.85, 35.65]]' }}</textarea>
+            </div>
 
-        <button type="submit">Save</button>
-        <a href="{{ url_for('polygons.admin_polygons') }}">Cancel</a>
-    </form>
+            <p class="code-hint">
+                Example:
+                <code>[[33.80, 35.40], [33.90, 35.50], [33.85, 35.65]]</code>
+            </p>
+
+            <div class="form-actions">
+                <button type="submit" class="button">Save</button>
+                <a href="{{ url_for('polygons.admin_polygons') }}" class="button button-secondary">Cancel</a>
+            </div>
+        </form>
+    </section>
 </div>
 {% endblock %}

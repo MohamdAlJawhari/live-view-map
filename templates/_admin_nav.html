@@ -1,0 +1,112 @@
+{% set home_active = request.endpoint == "main.index" %}
+{% set news_active = request.endpoint in ("news.admin_news", "news.edit_news") %}
+{% set add_news_active = request.endpoint == "news.add_news" %}
+{% set polygons_active = request.endpoint in (
+    "polygons.admin_polygons",
+    "polygons.add_polygon",
+    "polygons.edit_polygon",
+    "polygons.draw_polygon",
+    "polygons.polygons_map",
+    "polygons.edit_polygon_map"
+) %}
+{% set markers_active = request.endpoint == "news.markers_map" %}
+
+<nav class="app-nav" aria-label="Admin navigation">
+    <div class="app-nav__inner">
+        <a href="{{ url_for('main.index') }}" class="nav-item{% if home_active %} is-active{% endif %}">
+            <span class="nav-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 11.5 12 4l9 7.5"></path>
+                    <path d="M5.5 10.5V20h13V10.5"></path>
+                    <path d="M10 20v-5h4v5"></path>
+                </svg>
+            </span>
+            <span class="nav-label">Home</span>
+        </a>
+
+        <a href="{{ url_for('news.admin_news') }}" class="nav-item{% if news_active %} is-active{% endif %}">
+            <span class="nav-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="4" y="4" width="16" height="16" rx="3"></rect>
+                    <path d="M8 9h8"></path>
+                    <path d="M8 12h8"></path>
+                    <path d="M8 15h5"></path>
+                </svg>
+            </span>
+            <span class="nav-label">Manage News</span>
+        </a>
+
+        <a href="{{ url_for('news.add_news') }}" class="nav-item{% if add_news_active %} is-active{% endif %}">
+            <span class="nav-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="4" y="4" width="16" height="16" rx="3"></rect>
+                    <path d="M12 8v8"></path>
+                    <path d="M8 12h8"></path>
+                </svg>
+            </span>
+            <span class="nav-label">Add New News Item</span>
+        </a>
+
+        <a href="{{ url_for('polygons.admin_polygons') }}" class="nav-item{% if polygons_active %} is-active{% endif %}">
+            <span class="nav-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 4 19 9 16.5 18H7.5L5 9 12 4Z"></path>
+                </svg>
+            </span>
+            <span class="nav-label">Manage Polygons</span>
+        </a>
+
+        <a href="{{ url_for('news.markers_map') }}" class="nav-item{% if markers_active %} is-active{% endif %}">
+            <span class="nav-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 20s5-4.6 5-9a5 5 0 1 0-10 0c0 4.4 5 9 5 9Z"></path>
+                    <circle cx="12" cy="11" r="1.8"></circle>
+                </svg>
+            </span>
+            <span class="nav-label">Manage Markers on Map</span>
+        </a>
+
+        <form method="POST" action="{{ url_for('main.set_clustering') }}" class="nav-switch-form nav-item nav-item--switch{% if use_clustering %} is-active{% endif %}">
+            <input type="hidden" name="next" value="{{ request.path }}">
+            <input type="hidden" name="enabled" value="{{ 'true' if use_clustering else 'false' }}">
+
+            <span class="nav-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="7" cy="8" r="2"></circle>
+                    <circle cx="17" cy="8" r="2"></circle>
+                    <circle cx="12" cy="16" r="2"></circle>
+                    <path d="M8.7 9.1 10.3 14"></path>
+                    <path d="M15.3 9.1 13.7 14"></path>
+                    <path d="M9 8h6"></path>
+                </svg>
+            </span>
+            <span class="nav-label">Marker Clustering</span>
+
+            <label class="nav-switch" for="marker-clustering-switch">
+                <input
+                    id="marker-clustering-switch"
+                    class="nav-switch__input"
+                    type="checkbox"
+                    role="switch"
+                    aria-label="Toggle marker clustering"
+                    {% if use_clustering %}checked{% endif %}
+                    onchange="this.form.elements['enabled'].value = this.checked ? 'true' : 'false'; this.form.submit();"
+                >
+                <span class="nav-switch__track" aria-hidden="true">
+                    <span class="nav-switch__thumb"></span>
+                </span>
+            </label>
+        </form>
+
+        <a href="{{ url_for('auth.logout') }}" class="nav-item">
+            <span class="nav-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10 6H7a3 3 0 0 0-3 3v6a3 3 0 0 0 3 3h3"></path>
+                    <path d="M14 8l5 4-5 4"></path>
+                    <path d="M9 12h10"></path>
+                </svg>
+            </span>
+            <span class="nav-label">Log Out</span>
+        </a>
+    </div>
+</nav>

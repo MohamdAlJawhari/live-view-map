@@ -1,4 +1,5 @@
-from flask import render_template
+from flask import redirect, render_template, request, session, url_for
+from flask_login import login_required
 
 from models import News, Polygon
 
@@ -46,3 +47,15 @@ def index():
         marker_types=sorted(marker_types),
         polygons=polygon_data
     )
+
+
+@bp.route("/admin/settings/clustering", methods=["POST"])
+@login_required
+def set_clustering():
+    session["use_clustering"] = request.form.get("enabled", "true").lower() == "true"
+
+    next_path = request.form.get("next") or url_for("main.index")
+    if not next_path.startswith("/"):
+        next_path = url_for("main.index")
+
+    return redirect(next_path)

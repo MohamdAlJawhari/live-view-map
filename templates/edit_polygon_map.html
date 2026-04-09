@@ -3,31 +3,39 @@
 {% block title %}Edit Polygon on Map{% endblock %}
 
 {% block content %}
-<div style="padding: 20px;">
-    <h1>Edit Polygon on Map</h1>
-
-    <form method="POST" style="margin-bottom: 20px; max-width: 500px;">
-        <div style="margin-bottom: 12px;">
-            <label>Name</label><br>
-            <input type="text" name="name" value="{{ polygon.name }}" required style="width: 100%; padding: 8px;">
+<div class="page-shell">
+    <section class="map-card">
+        <div class="page-header">
+            <div>
+                <h1>Edit Polygon on Map</h1>
+                <p class="page-subtitle">Adjust an existing polygon shape and save the updated coordinates.</p>
+            </div>
         </div>
 
-        <div style="margin-bottom: 12px;">
-            <label>Color</label><br>
-            <input type="text" name="color" value="{{ polygon.color }}" required style="width: 100%; padding: 8px;">
-        </div>
+        <form method="POST" class="form-grid compact-form">
+            <div class="field">
+                <label for="name">Name</label>
+                <input id="name" type="text" name="name" value="{{ polygon.name }}" required>
+            </div>
 
-        <div style="margin-bottom: 12px;">
-            <label>Coordinates</label><br>
-            <textarea id="coordinates" name="coordinates" required readonly
-                      style="width: 100%; padding: 8px; height: 120px;">{{ polygon.coordinates | tojson | safe }}</textarea>
-        </div>
+            <div class="field">
+                <label for="color">Color</label>
+                <input id="color" type="text" name="color" value="{{ polygon.color }}" required>
+            </div>
 
-        <button type="submit">Save Changes</button>
-        <a href="{{ url_for('polygons.admin_polygons') }}">Cancel</a>
-    </form>
+            <div class="field">
+                <label for="coordinates">Coordinates</label>
+                <textarea id="coordinates" name="coordinates" required readonly>{{ polygon.coordinates | tojson | safe }}</textarea>
+            </div>
 
-    <div id="edit-map" style="height: 600px; border: 1px solid #ccc;"></div>
+            <div class="form-actions">
+                <button type="submit" class="button">Save Changes</button>
+                <a href="{{ url_for('polygons.admin_polygons') }}" class="button button-secondary">Cancel</a>
+            </div>
+        </form>
+
+        <div id="edit-map" class="map-frame"></div>
+    </section>
 </div>
 {% endblock %}
 

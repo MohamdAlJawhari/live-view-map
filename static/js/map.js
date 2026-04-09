@@ -4,7 +4,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
 
-const USE_CLUSTERING = true; // change to true or false
+const USE_CLUSTERING = typeof useClustering === "boolean" ? useClustering : true;
 const markersById = {};
 const newsCards = document.querySelectorAll(".news-card");
 const typeFilter = document.getElementById("type-filter");
