@@ -20,12 +20,22 @@
         {% if current_user.is_authenticated %}
             <div class="filter-box">
                 <label><strong>Polygon Manager:</strong></label>
-                <form method="POST" action="{{ url_for('polygons.polygons_map') }}" id="polygon-save-form" class="map-toolbar">
+                <form method="POST" action="{{ url_for('polygons.polygons_map') }}" id="polygon-save-form" class="polygon-manager-form">
+                    <div id="polygon-details-panel" hidden>
+                        <div class="field">
+                            <label for="polygon-name-input">Polygon name</label>
+                            <input id="polygon-name-input" type="text" value="New Polygon" autocomplete="off">
+                        </div>
+                        <div class="field">
+                            <label for="polygon-color-input">Polygon color</label>
+                            <input id="polygon-color-input" type="color" value="#ff0000">
+                        </div>
+                    </div>
+                    <p id="polygon-details-hint" class="note">Draw a polygon (or click one) to edit its details.</p>
                     <input type="hidden" name="data" id="polygon-map-data">
                     <input type="hidden" name="next" value="{{ url_for('main.index') }}">
                     <button type="submit" class="button">Save Polygon Changes</button>
                 </form>
-                <p class="note">Use the map draw, edit, and delete tools to manage polygons directly here.</p>
             </div>
         {% endif %}
 

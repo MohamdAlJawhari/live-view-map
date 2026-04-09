@@ -74,3 +74,18 @@
     flex: 1;
     min-height: 0;
 }
+
+.polygon-manager-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.polygon-manager-form .field {
+    margin: 0;
+}
+
+.polygon-manager-form input[type="color"] {
+    min-height: 42px;
+    padding: 6px;
+}
