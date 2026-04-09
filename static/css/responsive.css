@@ -16,12 +16,13 @@
 
 @media (max-width: 720px) {
     .app-nav__inner {
-        gap: 6px;
+        padding: 8px 10px 0;
+        gap: 10px;
     }
 
     .nav-item {
-        width: calc(25% - 6px);
-        min-width: 86px;
+        width: 88px;
+        min-width: 88px;
     }
 
     .page-shell,

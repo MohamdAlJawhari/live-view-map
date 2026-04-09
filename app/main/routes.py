@@ -1,5 +1,4 @@
 from flask import redirect, render_template, request, session, url_for
-from flask_login import login_required
 
 from models import News, Polygon
 
@@ -50,7 +49,6 @@ def index():
 
 
 @bp.route("/admin/settings/clustering", methods=["POST"])
-@login_required
 def set_clustering():
     session["use_clustering"] = request.form.get("enabled", "true").lower() == "true"
 
