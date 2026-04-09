@@ -17,6 +17,18 @@
             </select>
         </div>
 
+        {% if current_user.is_authenticated %}
+            <div class="filter-box">
+                <label><strong>Polygon Manager:</strong></label>
+                <form method="POST" action="{{ url_for('polygons.polygons_map') }}" id="polygon-save-form" class="map-toolbar">
+                    <input type="hidden" name="data" id="polygon-map-data">
+                    <input type="hidden" name="next" value="{{ url_for('main.index') }}">
+                    <button type="submit" class="button">Save Polygon Changes</button>
+                </form>
+                <p class="note">Use the map draw, edit, and delete tools to manage polygons directly here.</p>
+            </div>
+        {% endif %}
+
         <div id="news-list">
             {% if news_data %}
                 {% for item in news_data %}
@@ -49,6 +61,7 @@
     const newsData = {{ news_data | tojson }};
     const polygons = {{ polygons | tojson }};
     const useClustering = {{ use_clustering | tojson }};
+    const canManagePolygons = {{ current_user.is_authenticated | tojson }};
 </script>
 <script src="{{ url_for('static', filename='js/map.js') }}"></script>
 {% endblock %}

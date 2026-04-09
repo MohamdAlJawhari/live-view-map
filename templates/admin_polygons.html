@@ -8,12 +8,10 @@
         <div class="page-header">
             <div>
                 <h1>Manage Polygons</h1>
-                <p class="page-subtitle">Maintain polygon regions and adjust them either as JSON or directly on the map.</p>
+                <p class="page-subtitle">Maintain polygon regions as JSON. For map drawing/editing, use the Home page polygon tools.</p>
             </div>
             <div class="inline-actions">
                 <a href="{{ url_for('polygons.add_polygon') }}" class="button button-secondary">Add Polygon (JSON)</a>
-                <a href="{{ url_for('polygons.draw_polygon') }}" class="button button-secondary">Draw Polygon</a>
-                <a href="{{ url_for('polygons.polygons_map') }}" class="button button-secondary">Manage on Map</a>
             </div>
         </div>
 
@@ -38,7 +36,6 @@
                                 <td class="cell-break">{{ polygon.coordinates }}</td>
                                 <td class="table-actions">
                                     <a href="{{ url_for('polygons.edit_polygon', polygon_id=polygon.id) }}" class="button button-secondary">Edit Form</a>
-                                    <a href="{{ url_for('polygons.edit_polygon_map', polygon_id=polygon.id) }}" class="button button-secondary">Edit on Map</a>
                                     <form action="{{ url_for('polygons.delete_polygon', polygon_id=polygon.id) }}" method="POST">
                                         <button type="submit" class="button button-danger" onclick="return confirm('Are you sure you want to delete this polygon?');">
                                             Delete

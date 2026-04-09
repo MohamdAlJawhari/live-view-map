@@ -132,7 +132,11 @@ def polygons_map():
                 db.session.delete(polygon)
 
         db.session.commit()
-        return redirect(url_for("polygons.admin_polygons"))
+        next_path = request.form.get("next") or url_for("polygons.admin_polygons")
+        if not next_path.startswith("/"):
+            next_path = url_for("polygons.admin_polygons")
+
+        return redirect(next_path)
 
     polygons = Polygon.query.all()
 

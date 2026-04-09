@@ -1,15 +1,22 @@
-const map = L.map('map').setView([33.8547, 35.8623], 9);
+const map = L.map("map").setView([33.8547, 35.8623], 9);
 
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenStreetMap contributors'
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: "&copy; OpenStreetMap contributors"
 }).addTo(map);
 
 const USE_CLUSTERING = typeof useClustering === "boolean" ? useClustering : true;
+const CAN_MANAGE_POLYGONS = typeof canManagePolygons === "boolean" ? canManagePolygons : false;
+
 const markersById = {};
 const newsCards = document.querySelectorAll(".news-card");
 const typeFilter = document.getElementById("type-filter");
+const polygonSaveForm = document.getElementById("polygon-save-form");
+const polygonMapDataInput = document.getElementById("polygon-map-data");
 
-// Create one marker layer only
+const createdPolygonsByTempId = {};
+const updatedPolygonsById = {};
+const deletedPolygonIds = new Set();
+
 let markerLayer;
 
 if (USE_CLUSTERING) {
@@ -19,7 +26,39 @@ if (USE_CLUSTERING) {
     markerLayer = map;
 }
 
-// Add markers from database
+const drawnItems = CAN_MANAGE_POLYGONS ? new L.FeatureGroup() : null;
+if (drawnItems) {
+    map.addLayer(drawnItems);
+
+    const drawControl = new L.Control.Draw({
+        edit: {
+            featureGroup: drawnItems
+        },
+        draw: {
+            polygon: true,
+            rectangle: false,
+            circle: false,
+            marker: false,
+            polyline: false
+        }
+    });
+
+    map.addControl(drawControl);
+}
+
+function extractPolygonCoordinates(layer) {
+    if (typeof layer.getLatLngs !== "function") {
+        return null;
+    }
+
+    const latLngs = layer.getLatLngs();
+    if (!Array.isArray(latLngs) || latLngs.length === 0 || !Array.isArray(latLngs[0])) {
+        return null;
+    }
+
+    return latLngs[0].map(point => [point.lat, point.lng]);
+}
+
 if (typeof newsData !== "undefined" && Array.isArray(newsData)) {
     newsData.forEach(item => {
         const marker = L.marker([item.latitude, item.longitude], {
@@ -34,8 +73,7 @@ if (typeof newsData !== "undefined" && Array.isArray(newsData)) {
                 <p>${item.description}</p>
                 ${item.source_url
                 ? `<p><a href="${item.source_url}" target="_blank">Read source</a></p>`
-                : ""
-            }
+                : ""}
             </div>
         `);
 
@@ -52,22 +90,120 @@ if (typeof newsData !== "undefined" && Array.isArray(newsData)) {
     });
 }
 
-// Add polygons from database
-if (typeof polygons !== "undefined") {
+if (typeof polygons !== "undefined" && Array.isArray(polygons)) {
     polygons.forEach(p => {
-        const polygon = L.polygon(p.coordinates, {
+        const layer = L.polygon(p.coordinates, {
             color: p.color,
             fillOpacity: 0.3
-        }).addTo(map);
+        });
 
-        polygon.bindPopup(`<strong>${p.name}</strong>`);
+        layer.bindPopup(`<strong>${p.name}</strong>`);
+
+        if (drawnItems) {
+            layer._id = p.id;
+            layer._name = p.name;
+            layer._color = p.color;
+            drawnItems.addLayer(layer);
+        } else {
+            layer.addTo(map);
+        }
     });
 }
 
-// Make sidebar cards clickable
+if (drawnItems) {
+    map.on(L.Draw.Event.CREATED, event => {
+        const layer = event.layer;
+        const coordinates = extractPolygonCoordinates(layer);
+
+        if (!coordinates) {
+            alert("Only polygon shapes are supported.");
+            return;
+        }
+
+        const nameInput = prompt("Polygon name:", "New Polygon");
+        if (nameInput === null) {
+            return;
+        }
+
+        const colorInput = prompt("Color:", "red");
+        if (colorInput === null) {
+            return;
+        }
+
+        layer._name = nameInput.trim() || "New Polygon";
+        layer._color = colorInput.trim() || "red";
+        layer.setStyle({
+            color: layer._color,
+            fillOpacity: 0.3
+        });
+        layer.bindPopup(`<strong>${layer._name}</strong>`);
+
+        drawnItems.addLayer(layer);
+
+        const tempId = `tmp-${L.Util.stamp(layer)}`;
+        layer._tempId = tempId;
+        createdPolygonsByTempId[tempId] = {
+            name: layer._name,
+            color: layer._color,
+            coordinates: coordinates
+        };
+    });
+
+    map.on(L.Draw.Event.EDITED, event => {
+        event.layers.eachLayer(layer => {
+            const coordinates = extractPolygonCoordinates(layer);
+            if (!coordinates) {
+                return;
+            }
+
+            if (layer._id) {
+                updatedPolygonsById[layer._id] = {
+                    id: layer._id,
+                    name: layer._name,
+                    color: layer._color,
+                    coordinates: coordinates
+                };
+                return;
+            }
+
+            if (layer._tempId && createdPolygonsByTempId[layer._tempId]) {
+                createdPolygonsByTempId[layer._tempId].coordinates = coordinates;
+            }
+        });
+    });
+
+    map.on(L.Draw.Event.DELETED, event => {
+        event.layers.eachLayer(layer => {
+            if (layer._id) {
+                deletedPolygonIds.add(layer._id);
+                delete updatedPolygonsById[layer._id];
+                return;
+            }
+
+            if (layer._tempId && createdPolygonsByTempId[layer._tempId]) {
+                delete createdPolygonsByTempId[layer._tempId];
+            }
+        });
+    });
+
+    if (polygonSaveForm && polygonMapDataInput) {
+        polygonSaveForm.addEventListener("submit", () => {
+            const payload = {
+                created: Object.values(createdPolygonsByTempId),
+                updated: Object.values(updatedPolygonsById),
+                deleted: Array.from(deletedPolygonIds)
+            };
+
+            polygonMapDataInput.value = JSON.stringify(payload);
+        });
+    }
+}
+
 newsCards.forEach(card => {
     card.addEventListener("click", () => {
-        if (card.style.display === "none") return;
+        if (card.style.display === "none") {
+            return;
+        }
 
         const newsId = card.dataset.id;
         const markerEntry = markersById[newsId];
@@ -79,12 +215,10 @@ newsCards.forEach(card => {
     });
 });
 
-// Filter logic
 if (typeFilter) {
     typeFilter.addEventListener("change", () => {
         const selectedType = typeFilter.value;
 
-        // Show/hide markers
         Object.keys(markersById).forEach(id => {
             const markerEntry = markersById[id];
 
@@ -103,21 +237,15 @@ if (typeFilter) {
             }
         });
 
-        // Show/hide sidebar cards
         newsCards.forEach(card => {
             const cardType = card.dataset.type;
-
-            if (selectedType === "all" || cardType === selectedType) {
-                card.style.display = "block";
-            } else {
-                card.style.display = "none";
-            }
+            card.style.display = selectedType === "all" || cardType === selectedType ? "block" : "none";
         });
     });
 }
 
 function getMarkerIcon(type) {
-    const allowedTypes = ["rocket", "fire", "warning", "protest","rocket","drone","bomb"];
+    const allowedTypes = ["rocket", "fire", "warning", "protest", "rocket", "drone", "bomb"];
     const iconName = allowedTypes.includes(type) ? type : "default";
 
     return L.icon({

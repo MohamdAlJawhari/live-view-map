@@ -4,10 +4,7 @@
 {% set polygons_active = request.endpoint in (
     "polygons.admin_polygons",
     "polygons.add_polygon",
-    "polygons.edit_polygon",
-    "polygons.draw_polygon",
-    "polygons.polygons_map",
-    "polygons.edit_polygon_map"
+    "polygons.edit_polygon"
 ) %}
 {% set markers_active = request.endpoint == "news.markers_map" %}
 
