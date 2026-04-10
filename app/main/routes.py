@@ -56,6 +56,7 @@ def index():
     for slug, style in get_marker_type_style_map(include_inactive=True).items():
         marker_type_styles[slug] = {
             "iconUrl": url_for("static", filename=style["icon_path"]),
+            "hasBackground": bool(style.get("has_background", True)),
             "bgColor": style["bg_color"],
             "borderColor": style["border_color"],
             "iconColor": style["icon_color"],

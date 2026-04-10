@@ -293,6 +293,7 @@ def add_marker_type():
         name = str(request.form.get("name", "")).strip()
         slug = normalize_marker_type_slug(request.form.get("slug") or name)
         icon_path = _normalize_icon_path(request.form.get("icon_path") or DEFAULT_ICON_PATH)
+        has_background = "has_background" in request.form
         bg_color = normalize_marker_color(request.form.get("bg_color"), DEFAULT_BG_COLOR)
         border_color = normalize_marker_color(request.form.get("border_color"), DEFAULT_BORDER_COLOR)
         icon_color = normalize_marker_color(request.form.get("icon_color"), DEFAULT_ICON_COLOR)
@@ -323,6 +324,7 @@ def add_marker_type():
             name=name,
             slug=slug,
             icon_path=icon_path,
+            has_background=has_background,
             bg_color=bg_color,
             border_color=border_color,
             icon_color=icon_color,
@@ -349,6 +351,7 @@ def edit_marker_type(type_id):
         name = str(request.form.get("name", "")).strip()
         slug = normalize_marker_type_slug(request.form.get("slug") or name)
         icon_path = _normalize_icon_path(request.form.get("icon_path") or marker_type.icon_path)
+        has_background = "has_background" in request.form
         bg_color = normalize_marker_color(request.form.get("bg_color"), DEFAULT_BG_COLOR)
         border_color = normalize_marker_color(request.form.get("border_color"), DEFAULT_BORDER_COLOR)
         icon_color = normalize_marker_color(request.form.get("icon_color"), DEFAULT_ICON_COLOR)
@@ -378,6 +381,7 @@ def edit_marker_type(type_id):
         marker_type.name = name
         marker_type.slug = slug
         marker_type.icon_path = icon_path
+        marker_type.has_background = has_background
         marker_type.bg_color = bg_color
         marker_type.border_color = border_color
         marker_type.icon_color = icon_color

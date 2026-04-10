@@ -15,9 +15,10 @@ function normalizeMarkerData(rawData) {
 function getMarkerIcon(type, isSelected = false) {
     const style = resolveMarkerStyle(type);
     const encodedIconUrl = encodeURI(style.iconUrl);
+    const noBackgroundClass = style.hasBackground ? "" : " marker-badge--no-bg";
     const html = `
         <span
-            class="marker-badge${isSelected ? " marker-badge--active" : ""}"
+            class="marker-badge${noBackgroundClass}${isSelected ? " marker-badge--active" : ""}"
             style="
                 --marker-bg:${style.bgColor};
                 --marker-border:${style.borderColor};

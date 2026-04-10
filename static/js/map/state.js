@@ -10,6 +10,7 @@ const USE_CLUSTERING = typeof useClustering === "boolean" ? useClustering : true
 const MARKER_TYPE_STYLES = typeof markerTypeStyles === "object" && markerTypeStyles ? markerTypeStyles : {};
 const DEFAULT_MARKER_STYLE = {
     iconUrl: "/static/icons/default.svg",
+    hasBackground: true,
     bgColor: "#ff0000",
     borderColor: "#ffff00",
     iconColor: "#ffffff"

@@ -73,6 +73,7 @@ function resolveMarkerStyle(type) {
         iconUrl: typeof style.iconUrl === "string" && style.iconUrl.trim()
             ? style.iconUrl
             : DEFAULT_MARKER_STYLE.iconUrl,
+        hasBackground: toBoolean(style.hasBackground, DEFAULT_MARKER_STYLE.hasBackground),
         bgColor: normalizeHexColor(style.bgColor, DEFAULT_MARKER_STYLE.bgColor),
         borderColor: normalizeHexColor(style.borderColor, DEFAULT_MARKER_STYLE.borderColor),
         iconColor: normalizeHexColor(style.iconColor, DEFAULT_MARKER_STYLE.iconColor)

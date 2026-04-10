@@ -55,6 +55,7 @@ function applyBadgeStyle(element, markerType) {
 
     const style = resolveMarkerStyle(markerType);
     const encodedIconUrl = encodeURI(style.iconUrl);
+    element.classList.toggle("marker-badge--no-bg", !style.hasBackground);
 
     element.style.setProperty("--marker-bg", style.bgColor);
     element.style.setProperty("--marker-border", style.borderColor);

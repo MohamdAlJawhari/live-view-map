@@ -30,6 +30,7 @@ class MarkerType(db.Model):
     name = db.Column(db.String(100), nullable=False)
     slug = db.Column(db.String(50), unique=True, nullable=False, index=True)
     icon_path = db.Column(db.String(255), nullable=False, default="icons/default.svg")
+    has_background = db.Column(db.Boolean, nullable=False, default=True)
     bg_color = db.Column(db.String(20), nullable=False, default="#ff0000")
     border_color = db.Column(db.String(20), nullable=False, default="#ffff00")
     icon_color = db.Column(db.String(20), nullable=False, default="#ffffff")

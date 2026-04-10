@@ -38,7 +38,7 @@
                                 <td>
                                     <div class="marker-type-icon-cell">
                                         <span
-                                            class="marker-badge marker-badge--tiny"
+                                            class="marker-badge marker-badge--tiny{% if not marker_type.has_background %} marker-badge--no-bg{% endif %}"
                                             style="
                                                 --marker-bg:{{ marker_type.bg_color }};
                                                 --marker-border:{{ marker_type.border_color }};
@@ -48,8 +48,8 @@
                                             aria-label="{{ marker_type.name }} style preview"
                                         ></span>
                                         <code>{{ marker_type.icon_path }}</code>
-                                        <code>BG: {{ marker_type.bg_color }}</code>
-                                        <code>Ring: {{ marker_type.border_color }}</code>
+                                        <code>BG: {{ marker_type.bg_color if marker_type.has_background else 'off' }}</code>
+                                        <code>Ring: {{ marker_type.border_color if marker_type.has_background else 'off' }}</code>
                                         <code>Icon: {{ marker_type.icon_color }}</code>
                                     </div>
                                 </td>

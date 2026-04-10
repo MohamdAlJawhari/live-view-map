@@ -17,6 +17,7 @@ DEFAULT_MARKER_TYPES = (
         "name": "Warning",
         "slug": "warning",
         "icon_path": DEFAULT_ICON_PATH,
+        "has_background": True,
         "bg_color": DEFAULT_BG_COLOR,
         "border_color": DEFAULT_BORDER_COLOR,
         "icon_color": "#ffffff",
@@ -25,6 +26,7 @@ DEFAULT_MARKER_TYPES = (
         "name": "Rocket",
         "slug": "rocket",
         "icon_path": "icons/rocket.svg",
+        "has_background": True,
         "bg_color": DEFAULT_BG_COLOR,
         "border_color": DEFAULT_BORDER_COLOR,
         "icon_color": "#ffffff",
@@ -33,6 +35,7 @@ DEFAULT_MARKER_TYPES = (
         "name": "Fire",
         "slug": "fire",
         "icon_path": DEFAULT_ICON_PATH,
+        "has_background": True,
         "bg_color": "#9b2c2c",
         "border_color": "#f5a623",
         "icon_color": "#ffffff",
@@ -41,6 +44,7 @@ DEFAULT_MARKER_TYPES = (
         "name": "Protest",
         "slug": "protest",
         "icon_path": DEFAULT_ICON_PATH,
+        "has_background": True,
         "bg_color": "#5a3b0a",
         "border_color": "#d6a547",
         "icon_color": "#ffffff",
@@ -49,6 +53,7 @@ DEFAULT_MARKER_TYPES = (
         "name": "Drone",
         "slug": "drone",
         "icon_path": "icons/drone.svg",
+        "has_background": True,
         "bg_color": "#1f3a5f",
         "border_color": "#8fb3ff",
         "icon_color": "#ffffff",
@@ -57,6 +62,7 @@ DEFAULT_MARKER_TYPES = (
         "name": "Bomb",
         "slug": "bomb",
         "icon_path": "icons/bomb.svg",
+        "has_background": True,
         "bg_color": "#242424",
         "border_color": "#c5c5c5",
         "icon_color": "#ffffff",
@@ -65,6 +71,7 @@ DEFAULT_MARKER_TYPES = (
         "name": "Airstrike",
         "slug": "airstrike",
         "icon_path": "icons/rocket.svg",
+        "has_background": True,
         "bg_color": "#3d2b55",
         "border_color": "#b79cff",
         "icon_color": "#ffffff",
@@ -102,6 +109,7 @@ def ensure_marker_type_schema():
     inspector = inspect(db.engine)
     columns = {column["name"] for column in inspector.get_columns("marker_type")}
     additions = (
+        ("has_background", "BOOLEAN NOT NULL DEFAULT TRUE"),
         ("bg_color", "VARCHAR(20) NOT NULL DEFAULT '#ff0000'"),
         ("border_color", "VARCHAR(20) NOT NULL DEFAULT '#ffff00'"),
         ("icon_color", "VARCHAR(20) NOT NULL DEFAULT '#ffffff'"),
@@ -132,6 +140,7 @@ def ensure_marker_types_seeded():
                     name=item["name"],
                     slug=item["slug"],
                     icon_path=item["icon_path"],
+                    has_background=bool(item.get("has_background", True)),
                     bg_color=item["bg_color"],
                     border_color=item["border_color"],
                     icon_color=item["icon_color"],
@@ -143,6 +152,10 @@ def ensure_marker_types_seeded():
 
     for marker_type in existing_by_slug.values():
         updated_any = False
+
+        if marker_type.has_background is None:
+            marker_type.has_background = True
+            updated_any = True
 
         normalized_bg = normalize_marker_color(marker_type.bg_color, LEGACY_DEFAULT_BG_COLOR)
         normalized_border = normalize_marker_color(marker_type.border_color, LEGACY_DEFAULT_BORDER_COLOR)
@@ -181,6 +194,7 @@ def ensure_marker_types_seeded():
             name=humanize_marker_type_slug(slug),
             slug=slug,
             icon_path=DEFAULT_ICON_PATH,
+            has_background=True,
             bg_color=DEFAULT_BG_COLOR,
             border_color=DEFAULT_BORDER_COLOR,
             icon_color=DEFAULT_ICON_COLOR,
@@ -211,6 +225,7 @@ def get_marker_type_fallback_slug():
         name="Warning",
         slug="warning",
         icon_path=DEFAULT_ICON_PATH,
+        has_background=True,
         bg_color=DEFAULT_BG_COLOR,
         border_color=DEFAULT_BORDER_COLOR,
         icon_color=DEFAULT_ICON_COLOR,
@@ -260,6 +275,7 @@ def get_marker_type_style_map(include_inactive=True):
     for marker_type in query.order_by(MarkerType.name.asc()).all():
         style_map[marker_type.slug] = {
             "icon_path": marker_type.icon_path or DEFAULT_ICON_PATH,
+            "has_background": marker_type.has_background is not False,
             "bg_color": normalize_marker_color(marker_type.bg_color, DEFAULT_BG_COLOR),
             "border_color": normalize_marker_color(marker_type.border_color, DEFAULT_BORDER_COLOR),
             "icon_color": normalize_marker_color(marker_type.icon_color, DEFAULT_ICON_COLOR),

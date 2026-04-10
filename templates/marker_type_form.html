@@ -11,6 +11,7 @@
                 <p class="page-subtitle">Use slugs as marker type values and assign an icon for map rendering.</p>
             </div>
         </div>
+        {% set has_background_enabled = (marker_type.has_background if marker_type else True) %}
 
         <form method="POST" class="form-grid" enctype="multipart/form-data">
             <div class="field-grid">
@@ -41,6 +42,24 @@
                 <p class="note">If you upload a file, it replaces the selected icon for this marker type.</p>
             </div>
 
+            <div class="field">
+                <label class="form-switch" for="has_background">
+                    <input
+                        id="has_background"
+                        class="form-switch__input"
+                        name="has_background"
+                        type="checkbox"
+                        value="1"
+                        role="switch"
+                        {% if has_background_enabled %}checked{% endif %}
+                    >
+                    <span class="form-switch__track" aria-hidden="true">
+                        <span class="form-switch__thumb"></span>
+                    </span>
+                    <span class="form-switch__label">Show background fill</span>
+                </label>
+            </div>
+
             <div class="field-grid">
                 <div class="field">
                     <label for="bg_color">Background color</label>
@@ -62,7 +81,7 @@
                 <label>Current icon preview</label>
                 <span
                     id="marker-type-icon-preview"
-                    class="marker-badge marker-type-icon-preview marker-type-icon-preview--large"
+                    class="marker-badge marker-type-icon-preview marker-type-icon-preview--large{% if not has_background_enabled %} marker-badge--no-bg{% endif %}"
                     style="
                         --marker-bg:{{ marker_type.bg_color if marker_type else '#ff0000' }};
                         --marker-border:{{ marker_type.border_color if marker_type else '#ffff00' }};
@@ -89,6 +108,7 @@
     const bgColorInput = document.getElementById("bg_color");
     const borderColorInput = document.getElementById("border_color");
     const iconColorInput = document.getElementById("icon_color");
+    const hasBackgroundInput = document.getElementById("has_background");
 
     function refreshPreview() {
         if (!iconPreview) {
@@ -110,6 +130,10 @@
         if (iconColorInput) {
             iconPreview.style.setProperty("--marker-icon-color", iconColorInput.value);
         }
+
+        if (hasBackgroundInput) {
+            iconPreview.classList.toggle("marker-badge--no-bg", !hasBackgroundInput.checked);
+        }
     }
 
     if (iconSelect) {
@@ -123,6 +147,9 @@
     }
     if (iconColorInput) {
         iconColorInput.addEventListener("input", refreshPreview);
+    }
+    if (hasBackgroundInput) {
+        hasBackgroundInput.addEventListener("change", refreshPreview);
     }
 </script>
 {% endblock %}
