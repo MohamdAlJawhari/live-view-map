@@ -20,16 +20,13 @@
 
         <div class="field">
             <label for="marker-type-input">Marker type</label>
-            <input id="marker-type-input" type="text" value="warning" list="marker-type-options" autocomplete="off">
-            <datalist id="marker-type-options">
-                <option value="warning"></option>
-                <option value="rocket"></option>
-                <option value="fire"></option>
-                <option value="protest"></option>
-                <option value="drone"></option>
-                <option value="bomb"></option>
-                <option value="airstrike"></option>
-            </datalist>
+            <select id="marker-type-input">
+                {% for marker_type in marker_type_choices %}
+                    <option value="{{ marker_type.slug }}">
+                        {{ marker_type.name }}{% if not marker_type.is_active %} [inactive]{% endif %}
+                    </option>
+                {% endfor %}
+            </select>
         </div>
 
         <div class="field">

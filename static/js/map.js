@@ -7,6 +7,8 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 const CAN_MANAGE_MARKERS = typeof canManageMarkers === "boolean" ? canManageMarkers : false;
 const CAN_MANAGE_POLYGONS = typeof canManagePolygons === "boolean" ? canManagePolygons : false;
 const USE_CLUSTERING = typeof useClustering === "boolean" ? useClustering : true;
+const MARKER_TYPE_ICONS = typeof markerTypeIcons === "object" && markerTypeIcons ? markerTypeIcons : {};
+const DEFAULT_MARKER_ICON_URL = MARKER_TYPE_ICONS.warning || "/static/icons/default.svg";
 
 const newsList = document.getElementById("news-list");
 const typeFilter = document.getElementById("type-filter");
@@ -125,6 +127,23 @@ function normalizeMarkerType(type) {
     return normalized || "warning";
 }
 
+function ensureMarkerTypeInputOption(type) {
+    if (!markerTypeInput || !markerTypeInput.options) {
+        return;
+    }
+
+    const value = normalizeMarkerType(type);
+    const exists = Array.from(markerTypeInput.options).some(option => option.value === value);
+    if (exists) {
+        return;
+    }
+
+    const option = document.createElement("option");
+    option.value = value;
+    option.textContent = value;
+    markerTypeInput.appendChild(option);
+}
+
 function normalizeMarkerData(rawData) {
     return {
         id: toNumber(rawData.id, nextTempMarkerId),
@@ -140,17 +159,11 @@ function normalizeMarkerData(rawData) {
 }
 
 function getMarkerIcon(type) {
-    const aliases = {
-        airstrike: "rocket"
-    };
-
     const normalized = normalizeMarkerType(type);
-    const resolved = aliases[normalized] || normalized;
-    const allowed = ["rocket", "fire", "warning", "protest", "drone", "bomb"];
-    const iconName = allowed.includes(resolved) ? resolved : "default";
+    const iconUrl = MARKER_TYPE_ICONS[normalized] || DEFAULT_MARKER_ICON_URL;
 
     return L.icon({
-        iconUrl: `/static/icons/${iconName}.svg`,
+        iconUrl: iconUrl,
         iconSize: [32, 32],
         iconAnchor: [16, 32],
         popupAnchor: [0, -32]
@@ -378,6 +391,7 @@ function showMarkerDetails(marker) {
     }
 
     if (markerTypeInput) {
+        ensureMarkerTypeInputOption(marker._data.marker_type);
         markerTypeInput.value = marker._data.marker_type;
     }
 
@@ -572,7 +586,7 @@ if (CAN_MANAGE_MARKERS) {
     }
 
     if (markerTypeInput) {
-        markerTypeInput.addEventListener("input", applyMarkerFormToActiveMarker);
+        markerTypeInput.addEventListener("change", applyMarkerFormToActiveMarker);
     }
 
     if (markerRegionInput) {

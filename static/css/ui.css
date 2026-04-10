@@ -209,3 +209,55 @@ button:hover {
     border-radius: 18px;
     overflow: hidden;
 }
+
+.flash-wrap {
+    width: min(1240px, calc(100% - 40px));
+    margin: 18px auto 0;
+    display: grid;
+    gap: 8px;
+}
+
+.flash {
+    border-radius: 12px;
+    padding: 10px 14px;
+    border: 1px solid #ccd8ee;
+    background: #f4f8ff;
+    color: #30425d;
+}
+
+.flash-success {
+    border-color: #b7e3c7;
+    background: #effcf3;
+    color: #245a33;
+}
+
+.flash-error {
+    border-color: #f0c0c8;
+    background: #fff2f4;
+    color: #7b2835;
+}
+
+.marker-type-icon-cell {
+    display: grid;
+    gap: 8px;
+}
+
+.marker-type-icon-preview {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    border: 1px solid #dbe3f1;
+    border-radius: 8px;
+    padding: 4px;
+    background: #ffffff;
+}
+
+.marker-type-icon-preview--large {
+    width: 48px;
+    height: 48px;
+}
+
+.marker-type-preview {
+    display: grid;
+    gap: 8px;
+}

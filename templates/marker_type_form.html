@@ -1,0 +1,74 @@
+{% extends "layout.html" %}
+
+{% block title %}{{ form_title }}{% endblock %}
+
+{% block content %}
+<div class="form-shell">
+    <section class="form-card">
+        <div class="page-header">
+            <div>
+                <h1>{{ form_title }}</h1>
+                <p class="page-subtitle">Use slugs as marker type values and assign an icon for map rendering.</p>
+            </div>
+        </div>
+
+        <form method="POST" class="form-grid" enctype="multipart/form-data">
+            <div class="field-grid">
+                <div class="field">
+                    <label for="name">Name</label>
+                    <input id="name" type="text" name="name" required value="{{ marker_type.name if marker_type else '' }}">
+                </div>
+
+                <div class="field">
+                    <label for="slug">Slug</label>
+                    <input id="slug" type="text" name="slug" required value="{{ marker_type.slug if marker_type else '' }}">
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="icon_path">Existing icon</label>
+                <select id="icon_path" name="icon_path">
+                    {% set selected_icon = marker_type.icon_path if marker_type else 'icons/default.svg' %}
+                    {% for icon in available_icons %}
+                        <option value="{{ icon.path }}" {% if icon.path == selected_icon %}selected{% endif %}>{{ icon.label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="field">
+                <label for="icon_file">Upload new icon (optional)</label>
+                <input id="icon_file" type="file" name="icon_file" accept=".svg,.png,.jpg,.jpeg,.webp,.gif">
+                <p class="note">If you upload a file, it replaces the selected icon for this marker type.</p>
+            </div>
+
+            <div class="field marker-type-preview">
+                <label>Current icon preview</label>
+                <img
+                    id="marker-type-icon-preview"
+                    src="{{ url_for('static', filename=selected_icon) }}"
+                    alt="Marker type icon preview"
+                    class="marker-type-icon-preview marker-type-icon-preview--large"
+                >
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="button">Save</button>
+                <a href="{{ url_for('news.admin_marker_types') }}" class="button button-secondary">Cancel</a>
+            </div>
+        </form>
+    </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const iconSelect = document.getElementById("icon_path");
+    const iconPreview = document.getElementById("marker-type-icon-preview");
+
+    if (iconSelect && iconPreview) {
+        iconSelect.addEventListener("change", () => {
+            iconPreview.src = "{{ url_for('static', filename='') }}" + iconSelect.value;
+        });
+    }
+</script>
+{% endblock %}

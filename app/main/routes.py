@@ -2,6 +2,12 @@ from flask import redirect, render_template, request, session, url_for
 from flask_login import current_user
 
 from models import News, Polygon
+from app.marker_types import (
+    get_marker_type_choices,
+    get_marker_type_fallback_slug,
+    get_marker_type_icon_paths,
+    normalize_marker_type_slug,
+)
 
 from . import bp
 
@@ -15,21 +21,23 @@ def index():
 
     news_data = []
     marker_types = set()
+    fallback_type_slug = get_marker_type_fallback_slug()
 
     for item in news_items:
+        normalized_type = normalize_marker_type_slug(item.marker_type) or fallback_type_slug
         news_data.append({
             "id": item.id,
             "title": item.title,
             "description": item.description,
             "latitude": item.latitude,
             "longitude": item.longitude,
-            "marker_type": item.marker_type,
+            "marker_type": normalized_type,
             "region_name": item.region_name,
             "source_url": item.source_url,
             "is_visible": item.is_visible,
         })
 
-        marker_types.add(item.marker_type)
+        marker_types.add(normalized_type)
 
     # Add polygon data to the index route
     polygons = Polygon.query.all()
@@ -43,11 +51,19 @@ def index():
             "coordinates": p.get_coordinates()
         })
 
+    marker_type_choices = get_marker_type_choices()
+    marker_type_icons = {
+        slug: url_for("static", filename=icon_path)
+        for slug, icon_path in get_marker_type_icon_paths(include_inactive=True).items()
+    }
+
     return render_template(
         "index.html",
         page_title="Live View Map",
         news_data=news_data,
         marker_types=sorted(marker_types),
+        marker_type_choices=marker_type_choices,
+        marker_type_icons=marker_type_icons,
         polygons=polygon_data
     )
 

@@ -24,6 +24,19 @@ class News(db.Model):
     def __repr__(self):
         return f"<News {self.title}>"
 
+
+class MarkerType(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    slug = db.Column(db.String(50), unique=True, nullable=False, index=True)
+    icon_path = db.Column(db.String(255), nullable=False, default="icons/default.svg")
+    is_active = db.Column(db.Boolean, default=True, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def __repr__(self):
+        return f"<MarkerType {self.slug}>"
+
+
 class Polygon(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200), nullable=False)

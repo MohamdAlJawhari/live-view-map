@@ -1,0 +1,85 @@
+{% extends "layout.html" %}
+
+{% block title %}Admin - Marker Types{% endblock %}
+
+{% block content %}
+<div class="page-shell">
+    <section class="page-card">
+        <div class="page-header">
+            <div>
+                <h1>Marker Types</h1>
+                <p class="page-subtitle">Define marker categories and assign an icon to each type.</p>
+            </div>
+            <div class="inline-actions">
+                <a href="{{ url_for('news.add_marker_type') }}" class="button">Add Marker Type</a>
+            </div>
+        </div>
+
+        {% if marker_types %}
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Slug</th>
+                            <th>Icon</th>
+                            <th>Status</th>
+                            <th>Used By</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for marker_type in marker_types %}
+                            <tr>
+                                <td>{{ marker_type.id }}</td>
+                                <td>{{ marker_type.name }}</td>
+                                <td><code>{{ marker_type.slug }}</code></td>
+                                <td>
+                                    <div class="marker-type-icon-cell">
+                                        <img
+                                            src="{{ url_for('static', filename=marker_type.icon_path) }}"
+                                            alt="{{ marker_type.name }} icon"
+                                            class="marker-type-icon-preview"
+                                        >
+                                        <code>{{ marker_type.icon_path }}</code>
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if marker_type.is_active %}
+                                        Active
+                                    {% else %}
+                                        Inactive
+                                    {% endif %}
+                                </td>
+                                <td>{{ usage_counts.get(marker_type.slug, 0) }}</td>
+                                <td class="table-actions">
+                                    <a href="{{ url_for('news.edit_marker_type', type_id=marker_type.id) }}" class="button button-secondary">Edit</a>
+                                    <form method="POST" action="{{ url_for('news.toggle_marker_type', type_id=marker_type.id) }}">
+                                        {% if marker_type.is_active %}
+                                            <button type="submit" class="button button-secondary">Deactivate</button>
+                                        {% else %}
+                                            <button type="submit" class="button button-secondary">Activate</button>
+                                        {% endif %}
+                                    </form>
+                                    <form method="POST" action="{{ url_for('news.delete_marker_type', type_id=marker_type.id) }}">
+                                        <button
+                                            type="submit"
+                                            class="button button-danger"
+                                            onclick="return confirm('Delete this marker type? This is blocked if markers still use it.');"
+                                        >
+                                            Delete
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="empty-state">No marker types found.</p>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}

@@ -1,5 +1,6 @@
 {% set home_active = request.endpoint == "main.index" %}
 {% set news_active = request.endpoint in ("news.admin_news", "news.edit_news") %}
+{% set marker_types_active = request.endpoint in ("news.admin_marker_types", "news.add_marker_type", "news.edit_marker_type") %}
 
 <nav class="app-nav" aria-label="Admin navigation">
     <div class="app-nav__inner">
@@ -24,6 +25,19 @@
                 </svg>
             </span>
             <span class="nav-label">Manage News</span>
+        </a>
+
+        <a href="{{ url_for('news.admin_marker_types') }}" class="nav-item{% if marker_types_active %} is-active{% endif %}">
+            <span class="nav-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 8h10"></path>
+                    <path d="M4 12h8"></path>
+                    <path d="M4 16h6"></path>
+                    <circle cx="17" cy="12" r="3"></circle>
+                    <path d="M20 12h0"></path>
+                </svg>
+            </span>
+            <span class="nav-label">Marker Types</span>
         </a>
 
         <form method="POST" action="{{ url_for('main.set_clustering') }}" class="nav-switch-form nav-item nav-item--switch{% if use_clustering %} is-active{% endif %}">

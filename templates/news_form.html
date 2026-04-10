@@ -38,7 +38,14 @@
             <div class="field-grid">
                 <div class="field">
                     <label for="marker_type">Marker Type</label>
-                    <input id="marker_type" type="text" name="marker_type" required value="{{ news_item.marker_type if news_item else '' }}">
+                    {% set selected_type = default_marker_type %}
+                    <select id="marker_type" name="marker_type" required>
+                        {% for marker_type in marker_type_choices %}
+                            <option value="{{ marker_type.slug }}" {% if marker_type.slug == selected_type %}selected{% endif %}>
+                                {{ marker_type.name }} ({{ marker_type.slug }}){% if not marker_type.is_active %} [inactive]{% endif %}
+                            </option>
+                        {% endfor %}
+                    </select>
                 </div>
 
                 <div class="field">
