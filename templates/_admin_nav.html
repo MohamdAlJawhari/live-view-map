@@ -1,12 +1,5 @@
 {% set home_active = request.endpoint == "main.index" %}
 {% set news_active = request.endpoint in ("news.admin_news", "news.edit_news") %}
-{% set add_news_active = request.endpoint == "news.add_news" %}
-{% set polygons_active = request.endpoint in (
-    "polygons.admin_polygons",
-    "polygons.add_polygon",
-    "polygons.edit_polygon"
-) %}
-{% set markers_active = request.endpoint == "news.markers_map" %}
 
 <nav class="app-nav" aria-label="Admin navigation">
     <div class="app-nav__inner">
@@ -31,36 +24,6 @@
                 </svg>
             </span>
             <span class="nav-label">Manage News</span>
-        </a>
-
-        <a href="{{ url_for('news.add_news') }}" class="nav-item{% if add_news_active %} is-active{% endif %}">
-            <span class="nav-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="4" y="4" width="16" height="16" rx="3"></rect>
-                    <path d="M12 8v8"></path>
-                    <path d="M8 12h8"></path>
-                </svg>
-            </span>
-            <span class="nav-label">Add New News Item</span>
-        </a>
-
-        <a href="{{ url_for('polygons.admin_polygons') }}" class="nav-item{% if polygons_active %} is-active{% endif %}">
-            <span class="nav-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 4 19 9 16.5 18H7.5L5 9 12 4Z"></path>
-                </svg>
-            </span>
-            <span class="nav-label">Manage Polygons</span>
-        </a>
-
-        <a href="{{ url_for('news.markers_map') }}" class="nav-item{% if markers_active %} is-active{% endif %}">
-            <span class="nav-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 20s5-4.6 5-9a5 5 0 1 0-10 0c0 4.4 5 9 5 9Z"></path>
-                    <circle cx="12" cy="11" r="1.8"></circle>
-                </svg>
-            </span>
-            <span class="nav-label">Manage Markers on Map</span>
         </a>
 
         <form method="POST" action="{{ url_for('main.set_clustering') }}" class="nav-switch-form nav-item nav-item--switch{% if use_clustering %} is-active{% endif %}">
