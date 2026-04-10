@@ -23,6 +23,7 @@ const markerRegionInput = document.getElementById("marker-region-input");
 const markerSourceInput = document.getElementById("marker-source-input");
 const markerVisibleInput = document.getElementById("marker-visible-input");
 const markerPositionLabel = document.getElementById("marker-position-label");
+const markerPanelCloseButton = document.getElementById("marker-panel-close");
 
 const polygonSaveForm = document.getElementById("polygon-save-form");
 const polygonMapDataInput = document.getElementById("polygon-map-data");
@@ -30,6 +31,7 @@ const polygonNameInput = document.getElementById("polygon-name-input");
 const polygonColorInput = document.getElementById("polygon-color-input");
 const polygonDetailsPanel = document.getElementById("polygon-details-panel");
 const polygonDetailsHint = document.getElementById("polygon-details-hint");
+const polygonPanelCloseButton = document.getElementById("polygon-panel-close");
 
 const markersById = {};
 const createdMarkersByTempId = {};
@@ -332,8 +334,28 @@ function updateMarkerPositionLabel(data) {
     markerPositionLabel.textContent = `Lat: ${Number(data.latitude).toFixed(6)} | Lng: ${Number(data.longitude).toFixed(6)}`;
 }
 
+function openPanel(panel) {
+    if (!panel) {
+        return;
+    }
+    panel.hidden = false;
+    panel.classList.add("is-open");
+}
+
+function closePanel(panel) {
+    if (!panel) {
+        return;
+    }
+    panel.hidden = true;
+    panel.classList.remove("is-open");
+}
+
 function showMarkerDetails(marker) {
     activeMarker = marker;
+
+    closePanel(polygonSaveForm);
+
+    openPanel(markerSaveForm);
 
     if (markerDetailsPanel) {
         markerDetailsPanel.hidden = false;
@@ -376,6 +398,8 @@ function showMarkerDetails(marker) {
 
 function hideMarkerDetails() {
     activeMarker = null;
+
+    closePanel(markerSaveForm);
 
     if (markerDetailsPanel) {
         markerDetailsPanel.hidden = true;
@@ -573,6 +597,12 @@ if (CAN_MANAGE_MARKERS) {
         });
     }
 
+    if (markerPanelCloseButton) {
+        markerPanelCloseButton.addEventListener("click", () => {
+            hideMarkerDetails();
+        });
+    }
+
     hideMarkerDetails();
 }
 
@@ -680,6 +710,10 @@ function applyPolygonPresentation(layer) {
 function showPolygonDetails(layer) {
     activePolygonLayer = layer;
 
+    closePanel(markerSaveForm);
+
+    openPanel(polygonSaveForm);
+
     if (polygonDetailsPanel) {
         polygonDetailsPanel.hidden = false;
     }
@@ -699,6 +733,8 @@ function showPolygonDetails(layer) {
 
 function hidePolygonDetails() {
     activePolygonLayer = null;
+
+    closePanel(polygonSaveForm);
 
     if (polygonDetailsPanel) {
         polygonDetailsPanel.hidden = true;
@@ -878,6 +914,14 @@ if (drawnItems) {
             });
         });
     }
+
+    if (polygonPanelCloseButton) {
+        polygonPanelCloseButton.addEventListener("click", () => {
+            hidePolygonDetails();
+        });
+    }
+
+    hidePolygonDetails();
 }
 
 applyTypeFilter();

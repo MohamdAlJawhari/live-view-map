@@ -1,0 +1,57 @@
+<form method="POST" action="{{ url_for('news.markers_map') }}" id="marker-save-form" class="map-admin-panel marker-manager-form" hidden>
+    <div class="panel-header">
+        <div class="panel-title">Marker Details</div>
+        <button type="button" id="marker-panel-close" class="panel-close-button" aria-label="Close marker panel">✕</button>
+    </div>
+    <div class="marker-toolbar">
+        <button type="button" id="marker-delete-button" class="button button-danger" hidden>Delete Selected Marker</button>
+    </div>
+
+    <div id="marker-details-panel" hidden>
+        <div class="field">
+            <label for="marker-title-input">Title</label>
+            <input id="marker-title-input" type="text" value="New marker" autocomplete="off">
+        </div>
+
+        <div class="field">
+            <label for="marker-description-input">Description</label>
+            <textarea id="marker-description-input"></textarea>
+        </div>
+
+        <div class="field">
+            <label for="marker-type-input">Marker type</label>
+            <input id="marker-type-input" type="text" value="warning" list="marker-type-options" autocomplete="off">
+            <datalist id="marker-type-options">
+                <option value="warning"></option>
+                <option value="rocket"></option>
+                <option value="fire"></option>
+                <option value="protest"></option>
+                <option value="drone"></option>
+                <option value="bomb"></option>
+                <option value="airstrike"></option>
+            </datalist>
+        </div>
+
+        <div class="field">
+            <label for="marker-region-input">Region name</label>
+            <input id="marker-region-input" type="text" autocomplete="off">
+        </div>
+
+        <div class="field">
+            <label for="marker-source-input">Source URL</label>
+            <input id="marker-source-input" type="text" autocomplete="off">
+        </div>
+
+        <label class="checkbox-row">
+            <input id="marker-visible-input" type="checkbox" checked>
+            <span>Visible on public map</span>
+        </label>
+
+        <p id="marker-position-label" class="note"></p>
+    </div>
+
+    <p id="marker-details-hint" class="note">Use the marker tool in the map toolbar to create a marker. This form opens after creation.</p>
+    <input type="hidden" name="data" id="marker-map-data">
+    <input type="hidden" name="next" value="{{ url_for('main.index') }}">
+    <button type="submit" class="button">Save Marker Changes</button>
+</form>

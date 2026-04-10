@@ -1,0 +1,20 @@
+<form method="POST" action="{{ url_for('polygons.polygons_map') }}" id="polygon-save-form" class="map-admin-panel polygon-manager-form" hidden>
+    <div class="panel-header">
+        <div class="panel-title">Polygon Details</div>
+        <button type="button" id="polygon-panel-close" class="panel-close-button" aria-label="Close polygon panel">✕</button>
+    </div>
+    <div id="polygon-details-panel" hidden>
+        <div class="field">
+            <label for="polygon-name-input">Polygon name</label>
+            <input id="polygon-name-input" type="text" value="New Polygon" autocomplete="off">
+        </div>
+        <div class="field">
+            <label for="polygon-color-input">Polygon color</label>
+            <input id="polygon-color-input" type="color" value="#ff0000">
+        </div>
+    </div>
+    <p id="polygon-details-hint" class="note">Use the polygon tool in the map toolbar to draw a polygon. This form opens after creation.</p>
+    <input type="hidden" name="data" id="polygon-map-data">
+    <input type="hidden" name="next" value="{{ url_for('main.index') }}">
+    <button type="submit" class="button">Save Polygon Changes</button>
+</form>

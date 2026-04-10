@@ -17,85 +17,6 @@
             </select>
         </div>
 
-        {% if current_user.is_authenticated %}
-            <div class="filter-box">
-                <label><strong>Marker Manager:</strong></label>
-                <form method="POST" action="{{ url_for('news.markers_map') }}" id="marker-save-form" class="marker-manager-form">
-                    <div class="marker-toolbar">
-                        <button type="button" id="marker-delete-button" class="button button-danger" hidden>Delete Selected Marker</button>
-                    </div>
-
-                    <div id="marker-details-panel" hidden>
-                        <div class="field">
-                            <label for="marker-title-input">Title</label>
-                            <input id="marker-title-input" type="text" value="New marker" autocomplete="off">
-                        </div>
-
-                        <div class="field">
-                            <label for="marker-description-input">Description</label>
-                            <textarea id="marker-description-input"></textarea>
-                        </div>
-
-                        <div class="field">
-                            <label for="marker-type-input">Marker type</label>
-                            <input id="marker-type-input" type="text" value="warning" list="marker-type-options" autocomplete="off">
-                            <datalist id="marker-type-options">
-                                <option value="warning"></option>
-                                <option value="rocket"></option>
-                                <option value="fire"></option>
-                                <option value="protest"></option>
-                                <option value="drone"></option>
-                                <option value="bomb"></option>
-                                <option value="airstrike"></option>
-                            </datalist>
-                        </div>
-
-                        <div class="field">
-                            <label for="marker-region-input">Region name</label>
-                            <input id="marker-region-input" type="text" autocomplete="off">
-                        </div>
-
-                        <div class="field">
-                            <label for="marker-source-input">Source URL</label>
-                            <input id="marker-source-input" type="text" autocomplete="off">
-                        </div>
-
-                        <label class="checkbox-row">
-                            <input id="marker-visible-input" type="checkbox" checked>
-                            <span>Visible on public map</span>
-                        </label>
-
-                        <p id="marker-position-label" class="note"></p>
-                    </div>
-
-                    <p id="marker-details-hint" class="note">Use the marker tool in the map toolbar, or click an existing marker to edit.</p>
-                    <input type="hidden" name="data" id="marker-map-data">
-                    <input type="hidden" name="next" value="{{ url_for('main.index') }}">
-                    <button type="submit" class="button">Save Marker Changes</button>
-                </form>
-            </div>
-
-            <div class="filter-box">
-                <label><strong>Polygon Manager:</strong></label>
-                <form method="POST" action="{{ url_for('polygons.polygons_map') }}" id="polygon-save-form" class="polygon-manager-form">
-                    <div id="polygon-details-panel" hidden>
-                        <div class="field">
-                            <label for="polygon-name-input">Polygon name</label>
-                            <input id="polygon-name-input" type="text" value="New Polygon" autocomplete="off">
-                        </div>
-                        <div class="field">
-                            <label for="polygon-color-input">Polygon color</label>
-                            <input id="polygon-color-input" type="color" value="#ff0000">
-                        </div>
-                    </div>
-                    <p id="polygon-details-hint" class="note">Draw a polygon (or click one) to edit its details.</p>
-                    <input type="hidden" name="data" id="polygon-map-data">
-                    <input type="hidden" name="next" value="{{ url_for('main.index') }}">
-                    <button type="submit" class="button">Save Polygon Changes</button>
-                </form>
-            </div>
-        {% endif %}
-
         <div id="news-list">
             {% if news_data %}
                 {% for item in news_data %}
@@ -117,7 +38,16 @@
         </div>
     </div>
 
-    <div id="map"></div>
+    <div class="map-stage">
+        <div id="map"></div>
+
+        {% if current_user.is_authenticated %}
+            <div class="map-admin-panels">
+                {% include "_marker_details_form.html" %}
+                {% include "_polygon_details_form.html" %}
+            </div>
+        {% endif %}
+    </div>
 </div>
 
 <!-- <script>
