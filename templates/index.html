@@ -5,10 +5,13 @@
 {% block content %}
 <div class="page-container">
     <div class="sidebar">
-        <h2>Latest News</h2>
+        <div class="sidebar-header">
+            <h2>Latest News</h2>
+            <p class="sidebar-subtitle">Live incident feed. Select a card to focus the marker on the map.</p>
+        </div>
 
         <div class="filter-box">
-            <label for="type-filter"><strong>Filter by type:</strong></label>
+            <label for="type-filter">Filter By Type</label>
             <select id="type-filter">
                 <option value="all">All types</option>
                 {% for marker_type in marker_types %}
@@ -24,16 +27,23 @@
                          data-id="{{ item.id }}"
                          data-type="{{ item.marker_type }}">
                         <h3>{{ item.title }}</h3>
-                        <p><strong>Type:</strong> {{ item.marker_type }}</p>
-                        <p><strong>Region:</strong> {{ item.region_name or "Unknown" }}</p>
+                        <p class="news-meta"><strong>Type</strong><span>{{ item.marker_type }}</span></p>
+                        <p class="news-meta"><strong>Region</strong><span>{{ item.region_name or "Unknown" }}</span></p>
                         {% if current_user.is_authenticated %}
-                            <p><strong>Visible:</strong> {{ "Yes" if item.is_visible else "No" }}</p>
+                            <p class="news-meta"><strong>Visible</strong><span>{{ "Yes" if item.is_visible else "No" }}</span></p>
                         {% endif %}
-                        <p>{{ item.description }}</p>
+                        {% if item.description %}
+                            <p class="news-description">{{ item.description }}</p>
+                        {% endif %}
+                        {% if item.source_url %}
+                            <p class="news-source">
+                                <a href="{{ item.source_url }}" target="_blank" rel="noopener noreferrer">Read source</a>
+                            </p>
+                        {% endif %}
                     </div>
                 {% endfor %}
             {% else %}
-                <p>No news available.</p>
+                <p class="news-empty">No news available.</p>
             {% endif %}
         </div>
     </div>

@@ -1,29 +1,59 @@
 .page-container {
     flex: 1;
+    height: 100%;
     min-height: 0;
-    display: flex;
+    display: grid;
+    grid-template-columns: minmax(290px, 360px) minmax(0, 1fr);
+    gap: 14px;
+    padding: 14px;
 }
 
 .sidebar {
-    width: 320px;
-    background: #ffffff;
-    padding: 24px;
-    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(247, 251, 255, 0.92) 100%);
+    padding: 18px;
     overflow-y: auto;
-    border-right: 1px solid #dbe3f1;
+    border: 1px solid var(--color-border);
+    border-radius: 24px;
+    box-shadow: var(--shadow-soft);
+}
+
+.sidebar-header {
+    display: grid;
+    gap: 5px;
 }
 
 .sidebar h2 {
-    margin: 0 0 18px;
+    margin: 0;
+    color: var(--color-text);
+    font-size: 2rem;
+    line-height: 1.04;
+}
+
+.sidebar-subtitle {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
 }
 
 .filter-box {
-    margin-bottom: 18px;
+    display: grid;
+    gap: 8px;
+    padding: 12px;
+    border: 1px solid rgba(137, 160, 196, 0.4);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.9);
 }
 
 .filter-box label {
     display: block;
-    color: #43536c;
+    color: #4d607e;
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
 }
 
 .filter-box select,
@@ -31,43 +61,95 @@
 .field textarea {
     width: 100%;
     padding: 10px 12px;
-    box-sizing: border-box;
-    border: 1px solid #ccd8eb;
+    border: 1px solid #c7d3e6;
     border-radius: 12px;
     background: #ffffff;
-    color: #23344d;
+    color: var(--color-text);
     font: inherit;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.filter-box select:focus-visible,
+.field input:focus-visible,
+.field textarea:focus-visible {
+    outline: none;
+    border-color: #5a89ff;
+    box-shadow: 0 0 0 4px rgba(68, 118, 255, 0.16);
 }
 
 .field textarea {
-    min-height: 130px;
+    min-height: 120px;
     resize: vertical;
 }
 
+#news-list {
+    display: grid;
+    gap: 10px;
+    align-content: start;
+}
+
 .news-card {
-    background: #ffffff;
-    border: 1px solid #d9e3f2;
-    border-radius: 16px;
-    padding: 14px;
-    margin-bottom: 12px;
+    background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+    border: 1px solid rgba(132, 157, 196, 0.36);
+    border-radius: 18px;
+    padding: 12px;
     cursor: pointer;
-    transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    display: grid;
+    gap: 7px;
 }
 
 .news-card:hover {
-    background: #f5f9ff;
-    border-color: #9db7ff;
+    border-color: rgba(70, 115, 223, 0.54);
+    box-shadow: 0 10px 20px rgba(28, 51, 89, 0.15);
     transform: translateY(-1px);
 }
 
 .news-card h3 {
-    margin: 0 0 8px;
-    font-size: 16px;
+    margin: 0;
+    font-size: 1.34rem;
+    line-height: 1.1;
+    color: #1c2c44;
 }
 
 .news-card p {
-    margin: 4px 0;
-    font-size: 14px;
+    margin: 0;
+    font-size: 0.88rem;
+}
+
+.news-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    color: #49607f;
+}
+
+.news-meta strong {
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #70839f;
+}
+
+.news-meta span {
+    font-weight: 700;
+    color: var(--color-text);
+}
+
+.news-description {
+    color: var(--color-text-muted);
+    line-height: 1.45;
+}
+
+.news-source a {
+    font-size: 0.84rem;
+    font-weight: 700;
+}
+
+.news-empty {
+    margin: 8px 2px;
+    color: var(--color-text-muted);
 }
 
 #map {
@@ -77,10 +159,24 @@
 }
 
 .map-stage {
-    flex: 1;
+    height: 100%;
     min-height: 0;
     position: relative;
     isolation: isolate;
+    border-radius: 24px;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-pop);
+    background: #cad7ea;
+}
+
+.map-stage::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(160deg, rgba(255, 255, 255, 0.08), transparent 48%);
+    pointer-events: none;
+    z-index: 450;
 }
 
 .map-admin-panels {
@@ -91,16 +187,34 @@
     max-height: calc(100% - 28px);
     overflow-y: auto;
     display: grid;
-    gap: 12px;
+    gap: 10px;
     z-index: 1200;
 }
 
 .map-admin-panel {
-    background: rgba(255, 255, 255, 0.96);
-    border: 1px solid #dbe3f1;
-    border-radius: 14px;
-    box-shadow: 0 10px 24px rgba(36, 60, 96, 0.16);
+    background: rgba(250, 252, 255, 0.92);
+    border: 1px solid rgba(142, 166, 199, 0.44);
+    border-radius: 18px;
+    box-shadow: 0 12px 24px rgba(24, 44, 77, 0.2);
+    backdrop-filter: blur(7px);
     padding: 12px;
+    animation: panel-rise 0.2s ease-out;
+}
+
+.map-admin-panel[hidden] {
+    display: none !important;
+}
+
+@keyframes panel-rise {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .panel-header {
@@ -112,28 +226,31 @@
 }
 
 .panel-title {
+    font-family: var(--font-display);
     font-weight: 700;
-    color: #30425d;
+    color: #263a58;
+    letter-spacing: -0.01em;
 }
 
 .panel-close-button {
-    width: 30px;
-    height: 30px;
-    border-radius: 8px;
-    border: 1px solid #c6d5ee;
-    background: #ffffff;
-    color: #4d607e;
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    border: 1px solid #c7d5ea;
+    background: rgba(255, 255, 255, 0.84);
+    color: #526887;
     font-size: 16px;
     line-height: 1;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    transition: border-color 0.18s ease, color 0.18s ease, background-color 0.18s ease;
 }
 
 .panel-close-button:hover {
-    background: #f3f7ff;
-    border-color: #9db7ff;
+    background: #ffffff;
+    border-color: #8ca9df;
     color: #244fc9;
 }
 
@@ -147,21 +264,27 @@
 .marker-toolbar {
     display: flex;
     flex-wrap: wrap;
+    gap: 8px;
+}
+
+.marker-toolbar .button,
+.map-admin-panel > .button {
+    width: 100%;
+}
+
+.marker-manager-form #marker-details-panel,
+.polygon-manager-form #polygon-details-panel {
+    display: grid;
     gap: 10px;
 }
 
-.marker-manager-form #marker-details-panel {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.marker-manager-form #marker-details-panel[hidden] {
+.marker-manager-form #marker-details-panel[hidden],
+.polygon-manager-form #polygon-details-panel[hidden] {
     display: none;
 }
 
 .marker-manager-form textarea {
-    min-height: 90px;
+    min-height: 86px;
 }
 
 .marker-manager-form .button[hidden] {
@@ -174,7 +297,29 @@
 
 .polygon-manager-form input[type="color"] {
     min-height: 42px;
-    padding: 6px;
+    padding: 4px;
+}
+
+.leaflet-bar {
+    border: 0 !important;
+    box-shadow: 0 12px 20px rgba(20, 37, 65, 0.2) !important;
+}
+
+.leaflet-bar a {
+    border-bottom: 1px solid #d4dfef !important;
+    color: #2a3b56 !important;
+    background: rgba(255, 255, 255, 0.92) !important;
+}
+
+.leaflet-touch .leaflet-bar a {
+    width: 34px;
+    height: 34px;
+    line-height: 34px;
+}
+
+.leaflet-control-attribution {
+    background: rgba(255, 255, 255, 0.8) !important;
+    border-radius: 10px 0 0 0;
 }
 
 .marker-pin {
@@ -187,25 +332,29 @@
     height: 40px;
     border-radius: 999px;
     display: block;
-    box-sizing: border-box;
     position: relative;
     background: var(--marker-bg, #ff0000);
-    border: 6px solid var(--marker-border, #ffff00);
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+    border: 4px solid var(--marker-border, #ffff00);
+    box-shadow: 0 6px 12px rgba(8, 20, 40, 0.35);
+    transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
 }
 
 .marker-pin .marker-badge {
-    border-color: transparent;
+    border-color: rgba(255, 255, 255, 0.68);
 }
 
 .marker-pin .marker-badge.marker-badge--active {
+    transform: scale(1.08);
     border-color: var(--marker-border, #ffff00);
+    box-shadow:
+        0 0 0 3px rgba(255, 255, 255, 0.9),
+        0 10px 18px rgba(11, 24, 47, 0.45);
 }
 
 .marker-badge::before {
     content: "";
     position: absolute;
-    inset: 7px;
+    inset: 8px;
     background: var(--marker-icon-color, #ffffff);
     -webkit-mask-image: var(--marker-icon-url);
     mask-image: var(--marker-icon-url);
@@ -218,8 +367,8 @@
 }
 
 .marker-badge--tiny {
-    width: 34px;
-    height: 34px;
-    border-width: 5px;
+    width: 32px;
+    height: 32px;
+    border-width: 3px;
     box-shadow: none;
 }

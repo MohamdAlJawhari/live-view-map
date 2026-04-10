@@ -343,7 +343,7 @@ function applyTypeFilter() {
 
     newsList.querySelectorAll(".news-card").forEach(card => {
         const cardType = card.dataset.type;
-        card.style.display = selectedType === "all" || cardType === selectedType ? "block" : "none";
+        card.style.display = selectedType === "all" || cardType === selectedType ? "" : "none";
     });
 }
 
@@ -358,6 +358,7 @@ function ensureNewsListPlaceholderState() {
     if (cards.length === 0 && placeholders.length === 0) {
         const empty = document.createElement("p");
         empty.dataset.empty = "true";
+        empty.className = "news-empty";
         empty.textContent = "No news available.";
         newsList.appendChild(empty);
     }
@@ -387,15 +388,22 @@ function renderNewsCard(data) {
     card.dataset.type = markerData.marker_type;
 
     const visibilityLine = CAN_MANAGE_MARKERS
-        ? `<p><strong>Visible:</strong> ${markerData.is_visible ? "Yes" : "No"}</p>`
+        ? `<p class="news-meta"><strong>Visible</strong><span>${markerData.is_visible ? "Yes" : "No"}</span></p>`
+        : "";
+    const descriptionLine = markerData.description
+        ? `<p class="news-description">${escapeHtml(markerData.description)}</p>`
+        : "";
+    const sourceLine = markerData.source_url
+        ? `<p class="news-source"><a href="${escapeHtml(markerData.source_url)}" target="_blank" rel="noopener noreferrer">Read source</a></p>`
         : "";
 
     card.innerHTML = `
         <h3>${escapeHtml(markerData.title)}</h3>
-        <p><strong>Type:</strong> ${escapeHtml(markerData.marker_type)}</p>
-        <p><strong>Region:</strong> ${escapeHtml(markerData.region_name || "Unknown")}</p>
+        <p class="news-meta"><strong>Type</strong><span>${escapeHtml(markerData.marker_type)}</span></p>
+        <p class="news-meta"><strong>Region</strong><span>${escapeHtml(markerData.region_name || "Unknown")}</span></p>
         ${visibilityLine}
-        <p>${escapeHtml(markerData.description || "")}</p>
+        ${descriptionLine}
+        ${sourceLine}
     `;
 
     ensureNewsListPlaceholderState();
