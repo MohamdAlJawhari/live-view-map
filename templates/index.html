@@ -75,5 +75,9 @@
     const canManageMarkers = {{ current_user.is_authenticated | tojson }};
     const canManagePolygons = {{ current_user.is_authenticated | tojson }};
 </script>
-<script src="{{ url_for('static', filename='js/map.js') }}"></script>
+<script src="{{ url_for('static', filename='js/map/state.js') }}"></script>
+<script src="{{ url_for('static', filename='js/map/utils.js') }}"></script>
+<script src="{{ url_for('static', filename='js/map/marker_type_picker.js') }}"></script>
+<script src="{{ url_for('static', filename='js/map/markers.js') }}"></script>
+<script src="{{ url_for('static', filename='js/map/polygons.js') }}"></script>
 {% endblock %}
