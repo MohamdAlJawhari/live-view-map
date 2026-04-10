@@ -7,8 +7,13 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 const CAN_MANAGE_MARKERS = typeof canManageMarkers === "boolean" ? canManageMarkers : false;
 const CAN_MANAGE_POLYGONS = typeof canManagePolygons === "boolean" ? canManagePolygons : false;
 const USE_CLUSTERING = typeof useClustering === "boolean" ? useClustering : true;
-const MARKER_TYPE_ICONS = typeof markerTypeIcons === "object" && markerTypeIcons ? markerTypeIcons : {};
-const DEFAULT_MARKER_ICON_URL = MARKER_TYPE_ICONS.warning || "/static/icons/default.svg";
+const MARKER_TYPE_STYLES = typeof markerTypeStyles === "object" && markerTypeStyles ? markerTypeStyles : {};
+const DEFAULT_MARKER_STYLE = {
+    iconUrl: "/static/icons/default.svg",
+    bgColor: "#8a4b00",
+    borderColor: "#f4c20d",
+    iconColor: "#ffffff"
+};
 
 const newsList = document.getElementById("news-list");
 const typeFilter = document.getElementById("type-filter");
@@ -127,6 +132,38 @@ function normalizeMarkerType(type) {
     return normalized || "warning";
 }
 
+function normalizeHexColor(value, fallback) {
+    if (typeof value !== "string") {
+        return fallback;
+    }
+
+    const trimmed = value.trim();
+    if (/^#[0-9a-fA-F]{6}$/.test(trimmed)) {
+        return trimmed.toLowerCase();
+    }
+
+    if (/^#[0-9a-fA-F]{3}$/.test(trimmed)) {
+        return `#${trimmed[1]}${trimmed[1]}${trimmed[2]}${trimmed[2]}${trimmed[3]}${trimmed[3]}`.toLowerCase();
+    }
+
+    return fallback;
+}
+
+function resolveMarkerStyle(type) {
+    const normalized = normalizeMarkerType(type);
+    const warningStyle = MARKER_TYPE_STYLES.warning || {};
+    const style = MARKER_TYPE_STYLES[normalized] || warningStyle;
+
+    return {
+        iconUrl: typeof style.iconUrl === "string" && style.iconUrl.trim()
+            ? style.iconUrl
+            : DEFAULT_MARKER_STYLE.iconUrl,
+        bgColor: normalizeHexColor(style.bgColor, DEFAULT_MARKER_STYLE.bgColor),
+        borderColor: normalizeHexColor(style.borderColor, DEFAULT_MARKER_STYLE.borderColor),
+        iconColor: normalizeHexColor(style.iconColor, DEFAULT_MARKER_STYLE.iconColor)
+    };
+}
+
 function ensureMarkerTypeInputOption(type) {
     if (!markerTypeInput || !markerTypeInput.options) {
         return;
@@ -159,14 +196,26 @@ function normalizeMarkerData(rawData) {
 }
 
 function getMarkerIcon(type) {
-    const normalized = normalizeMarkerType(type);
-    const iconUrl = MARKER_TYPE_ICONS[normalized] || DEFAULT_MARKER_ICON_URL;
+    const style = resolveMarkerStyle(type);
+    const encodedIconUrl = encodeURI(style.iconUrl);
+    const html = `
+        <span
+            class="marker-badge"
+            style="
+                --marker-bg:${style.bgColor};
+                --marker-border:${style.borderColor};
+                --marker-icon-color:${style.iconColor};
+                --marker-icon-url:url('${encodedIconUrl}');
+            "
+        ></span>
+    `;
 
-    return L.icon({
-        iconUrl: iconUrl,
-        iconSize: [32, 32],
-        iconAnchor: [16, 32],
-        popupAnchor: [0, -32]
+    return L.divIcon({
+        className: "marker-pin",
+        html: html.trim(),
+        iconSize: [40, 40],
+        iconAnchor: [20, 20],
+        popupAnchor: [0, -20]
     });
 }
 

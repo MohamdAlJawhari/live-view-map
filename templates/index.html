@@ -60,7 +60,7 @@
 <script>
     const newsData = {{ news_data | tojson }};
     const polygons = {{ polygons | tojson }};
-    const markerTypeIcons = {{ marker_type_icons | tojson }};
+    const markerTypeStyles = {{ marker_type_styles | tojson }};
     const useClustering = {{ use_clustering | tojson }};
     const canManageMarkers = {{ current_user.is_authenticated | tojson }};
     const canManagePolygons = {{ current_user.is_authenticated | tojson }};

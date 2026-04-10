@@ -1,18 +1,72 @@
 import re
 
+from sqlalchemy import inspect, text
+
 from extensions import db
 from models import MarkerType, News
 
 DEFAULT_ICON_PATH = "icons/default.svg"
+DEFAULT_BG_COLOR = "#8a4b00"
+DEFAULT_BORDER_COLOR = "#f4c20d"
+DEFAULT_ICON_COLOR = "#ffffff"
 
 DEFAULT_MARKER_TYPES = (
-    {"name": "Warning", "slug": "warning", "icon_path": DEFAULT_ICON_PATH},
-    {"name": "Rocket", "slug": "rocket", "icon_path": "icons/rocket.svg"},
-    {"name": "Fire", "slug": "fire", "icon_path": DEFAULT_ICON_PATH},
-    {"name": "Protest", "slug": "protest", "icon_path": DEFAULT_ICON_PATH},
-    {"name": "Drone", "slug": "drone", "icon_path": "icons/drone.svg"},
-    {"name": "Bomb", "slug": "bomb", "icon_path": "icons/bomb.svg"},
-    {"name": "Airstrike", "slug": "airstrike", "icon_path": "icons/rocket.svg"},
+    {
+        "name": "Warning",
+        "slug": "warning",
+        "icon_path": DEFAULT_ICON_PATH,
+        "bg_color": "#8a4b00",
+        "border_color": "#f4c20d",
+        "icon_color": "#ffffff",
+    },
+    {
+        "name": "Rocket",
+        "slug": "rocket",
+        "icon_path": "icons/rocket.svg",
+        "bg_color": "#8a4b00",
+        "border_color": "#f4c20d",
+        "icon_color": "#ffffff",
+    },
+    {
+        "name": "Fire",
+        "slug": "fire",
+        "icon_path": DEFAULT_ICON_PATH,
+        "bg_color": "#9b2c2c",
+        "border_color": "#f5a623",
+        "icon_color": "#ffffff",
+    },
+    {
+        "name": "Protest",
+        "slug": "protest",
+        "icon_path": DEFAULT_ICON_PATH,
+        "bg_color": "#5a3b0a",
+        "border_color": "#d6a547",
+        "icon_color": "#ffffff",
+    },
+    {
+        "name": "Drone",
+        "slug": "drone",
+        "icon_path": "icons/drone.svg",
+        "bg_color": "#1f3a5f",
+        "border_color": "#8fb3ff",
+        "icon_color": "#ffffff",
+    },
+    {
+        "name": "Bomb",
+        "slug": "bomb",
+        "icon_path": "icons/bomb.svg",
+        "bg_color": "#242424",
+        "border_color": "#c5c5c5",
+        "icon_color": "#ffffff",
+    },
+    {
+        "name": "Airstrike",
+        "slug": "airstrike",
+        "icon_path": "icons/rocket.svg",
+        "bg_color": "#3d2b55",
+        "border_color": "#b79cff",
+        "icon_color": "#ffffff",
+    },
 )
 
 
@@ -28,7 +82,44 @@ def humanize_marker_type_slug(slug):
     return cleaned.replace("-", " ").title()
 
 
+def normalize_marker_color(value, default):
+    raw = str(value or "").strip()
+    if re.match(r"^#[0-9a-fA-F]{6}$", raw):
+        return raw.lower()
+
+    short_match = re.match(r"^#[0-9a-fA-F]{3}$", raw)
+    if short_match:
+        return f"#{raw[1]*2}{raw[2]*2}{raw[3]*2}".lower()
+
+    return default
+
+
+def ensure_marker_type_schema():
+    MarkerType.__table__.create(bind=db.engine, checkfirst=True)
+
+    inspector = inspect(db.engine)
+    columns = {column["name"] for column in inspector.get_columns("marker_type")}
+    additions = (
+        ("bg_color", "VARCHAR(20) NOT NULL DEFAULT '#8a4b00'"),
+        ("border_color", "VARCHAR(20) NOT NULL DEFAULT '#f4c20d'"),
+        ("icon_color", "VARCHAR(20) NOT NULL DEFAULT '#ffffff'"),
+    )
+
+    added_any = False
+    for column_name, ddl in additions:
+        if column_name in columns:
+            continue
+
+        db.session.execute(text(f"ALTER TABLE marker_type ADD COLUMN {column_name} {ddl}"))
+        added_any = True
+
+    if added_any:
+        db.session.commit()
+
+
 def ensure_marker_types_seeded():
+    ensure_marker_type_schema()
+
     changed = False
 
     existing_by_slug = {item.slug: item for item in MarkerType.query.all()}
@@ -39,6 +130,9 @@ def ensure_marker_types_seeded():
                     name=item["name"],
                     slug=item["slug"],
                     icon_path=item["icon_path"],
+                    bg_color=item["bg_color"],
+                    border_color=item["border_color"],
+                    icon_color=item["icon_color"],
                     is_active=True,
                 )
             )
@@ -55,6 +149,9 @@ def ensure_marker_types_seeded():
             name=humanize_marker_type_slug(slug),
             slug=slug,
             icon_path=DEFAULT_ICON_PATH,
+            bg_color=DEFAULT_BG_COLOR,
+            border_color=DEFAULT_BORDER_COLOR,
+            icon_color=DEFAULT_ICON_COLOR,
             is_active=True,
         )
         db.session.add(marker_type)
@@ -78,7 +175,15 @@ def get_marker_type_fallback_slug():
         db.session.commit()
         return warning.slug
 
-    warning = MarkerType(name="Warning", slug="warning", icon_path=DEFAULT_ICON_PATH, is_active=True)
+    warning = MarkerType(
+        name="Warning",
+        slug="warning",
+        icon_path=DEFAULT_ICON_PATH,
+        bg_color=DEFAULT_BG_COLOR,
+        border_color=DEFAULT_BORDER_COLOR,
+        icon_color=DEFAULT_ICON_COLOR,
+        is_active=True,
+    )
     db.session.add(warning)
     db.session.commit()
     return warning.slug
@@ -110,6 +215,25 @@ def get_marker_type_icon_paths(include_inactive=True):
         icon_map[marker_type.slug] = marker_type.icon_path or DEFAULT_ICON_PATH
 
     return icon_map
+
+
+def get_marker_type_style_map(include_inactive=True):
+    ensure_marker_types_seeded()
+
+    query = MarkerType.query
+    if not include_inactive:
+        query = query.filter_by(is_active=True)
+
+    style_map = {}
+    for marker_type in query.order_by(MarkerType.name.asc()).all():
+        style_map[marker_type.slug] = {
+            "icon_path": marker_type.icon_path or DEFAULT_ICON_PATH,
+            "bg_color": normalize_marker_color(marker_type.bg_color, DEFAULT_BG_COLOR),
+            "border_color": normalize_marker_color(marker_type.border_color, DEFAULT_BORDER_COLOR),
+            "icon_color": normalize_marker_color(marker_type.icon_color, DEFAULT_ICON_COLOR),
+        }
+
+    return style_map
 
 
 def get_marker_type_choices(include_inactive_slug=None):

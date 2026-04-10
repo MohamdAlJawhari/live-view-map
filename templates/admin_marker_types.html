@@ -23,7 +23,7 @@
                             <th>ID</th>
                             <th>Name</th>
                             <th>Slug</th>
-                            <th>Icon</th>
+                            <th>Style</th>
                             <th>Status</th>
                             <th>Used By</th>
                             <th>Actions</th>
@@ -37,12 +37,20 @@
                                 <td><code>{{ marker_type.slug }}</code></td>
                                 <td>
                                     <div class="marker-type-icon-cell">
-                                        <img
-                                            src="{{ url_for('static', filename=marker_type.icon_path) }}"
-                                            alt="{{ marker_type.name }} icon"
-                                            class="marker-type-icon-preview"
-                                        >
+                                        <span
+                                            class="marker-badge marker-badge--tiny"
+                                            style="
+                                                --marker-bg:{{ marker_type.bg_color }};
+                                                --marker-border:{{ marker_type.border_color }};
+                                                --marker-icon-color:{{ marker_type.icon_color }};
+                                                --marker-icon-url:url('{{ url_for('static', filename=marker_type.icon_path) }}');
+                                            "
+                                            aria-label="{{ marker_type.name }} style preview"
+                                        ></span>
                                         <code>{{ marker_type.icon_path }}</code>
+                                        <code>BG: {{ marker_type.bg_color }}</code>
+                                        <code>Ring: {{ marker_type.border_color }}</code>
+                                        <code>Icon: {{ marker_type.icon_color }}</code>
                                     </div>
                                 </td>
                                 <td>

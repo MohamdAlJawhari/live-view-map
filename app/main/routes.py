@@ -5,7 +5,7 @@ from models import News, Polygon
 from app.marker_types import (
     get_marker_type_choices,
     get_marker_type_fallback_slug,
-    get_marker_type_icon_paths,
+    get_marker_type_style_map,
     normalize_marker_type_slug,
 )
 
@@ -52,10 +52,14 @@ def index():
         })
 
     marker_type_choices = get_marker_type_choices()
-    marker_type_icons = {
-        slug: url_for("static", filename=icon_path)
-        for slug, icon_path in get_marker_type_icon_paths(include_inactive=True).items()
-    }
+    marker_type_styles = {}
+    for slug, style in get_marker_type_style_map(include_inactive=True).items():
+        marker_type_styles[slug] = {
+            "iconUrl": url_for("static", filename=style["icon_path"]),
+            "bgColor": style["bg_color"],
+            "borderColor": style["border_color"],
+            "iconColor": style["icon_color"],
+        }
 
     return render_template(
         "index.html",
@@ -63,7 +67,7 @@ def index():
         news_data=news_data,
         marker_types=sorted(marker_types),
         marker_type_choices=marker_type_choices,
-        marker_type_icons=marker_type_icons,
+        marker_type_styles=marker_type_styles,
         polygons=polygon_data
     )
 

@@ -245,11 +245,7 @@ button:hover {
 .marker-type-icon-preview {
     width: 32px;
     height: 32px;
-    object-fit: contain;
-    border: 1px solid #dbe3f1;
-    border-radius: 8px;
-    padding: 4px;
-    background: #ffffff;
+    display: inline-block;
 }
 
 .marker-type-icon-preview--large {

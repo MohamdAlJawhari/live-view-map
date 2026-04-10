@@ -176,3 +176,42 @@
     min-height: 42px;
     padding: 6px;
 }
+
+.marker-pin {
+    background: transparent;
+    border: 0;
+}
+
+.marker-badge {
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    display: block;
+    box-sizing: border-box;
+    position: relative;
+    background: var(--marker-bg, #8a4b00);
+    border: 6px solid var(--marker-border, #f4c20d);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+}
+
+.marker-badge::before {
+    content: "";
+    position: absolute;
+    inset: 7px;
+    background: var(--marker-icon-color, #ffffff);
+    -webkit-mask-image: var(--marker-icon-url);
+    mask-image: var(--marker-icon-url);
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+}
+
+.marker-badge--tiny {
+    width: 34px;
+    height: 34px;
+    border-width: 5px;
+    box-shadow: none;
+}

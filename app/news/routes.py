@@ -8,10 +8,14 @@ from sqlalchemy import func
 from werkzeug.utils import secure_filename
 
 from app.marker_types import (
+    DEFAULT_BG_COLOR,
+    DEFAULT_BORDER_COLOR,
     DEFAULT_ICON_PATH,
+    DEFAULT_ICON_COLOR,
     get_marker_type_choices,
     get_marker_type_fallback_slug,
     normalize_marker_type_slug,
+    normalize_marker_color,
     sanitize_marker_type_for_save,
 )
 from extensions import db
@@ -118,6 +122,7 @@ def _remove_managed_icon_file(icon_path):
 
 
 def _render_marker_type_form(form_title, marker_type):
+    get_marker_type_fallback_slug()
     return render_template(
         "marker_type_form.html",
         form_title=form_title,
@@ -282,10 +287,15 @@ def admin_marker_types():
 @bp.route("/admin/marker-types/add", methods=["GET", "POST"])
 @login_required
 def add_marker_type():
+    get_marker_type_fallback_slug()
+
     if request.method == "POST":
         name = str(request.form.get("name", "")).strip()
         slug = normalize_marker_type_slug(request.form.get("slug") or name)
         icon_path = _normalize_icon_path(request.form.get("icon_path") or DEFAULT_ICON_PATH)
+        bg_color = normalize_marker_color(request.form.get("bg_color"), DEFAULT_BG_COLOR)
+        border_color = normalize_marker_color(request.form.get("border_color"), DEFAULT_BORDER_COLOR)
+        icon_color = normalize_marker_color(request.form.get("icon_color"), DEFAULT_ICON_COLOR)
 
         if not name:
             flash("Name is required.", "error")
@@ -313,6 +323,9 @@ def add_marker_type():
             name=name,
             slug=slug,
             icon_path=icon_path,
+            bg_color=bg_color,
+            border_color=border_color,
+            icon_color=icon_color,
             is_active=True,
         )
         db.session.add(marker_type)
@@ -326,6 +339,7 @@ def add_marker_type():
 @bp.route("/admin/marker-types/edit/<int:type_id>", methods=["GET", "POST"])
 @login_required
 def edit_marker_type(type_id):
+    get_marker_type_fallback_slug()
     marker_type = MarkerType.query.get_or_404(type_id)
 
     if request.method == "POST":
@@ -335,6 +349,9 @@ def edit_marker_type(type_id):
         name = str(request.form.get("name", "")).strip()
         slug = normalize_marker_type_slug(request.form.get("slug") or name)
         icon_path = _normalize_icon_path(request.form.get("icon_path") or marker_type.icon_path)
+        bg_color = normalize_marker_color(request.form.get("bg_color"), DEFAULT_BG_COLOR)
+        border_color = normalize_marker_color(request.form.get("border_color"), DEFAULT_BORDER_COLOR)
+        icon_color = normalize_marker_color(request.form.get("icon_color"), DEFAULT_ICON_COLOR)
 
         if not name:
             flash("Name is required.", "error")
@@ -361,6 +378,9 @@ def edit_marker_type(type_id):
         marker_type.name = name
         marker_type.slug = slug
         marker_type.icon_path = icon_path
+        marker_type.bg_color = bg_color
+        marker_type.border_color = border_color
+        marker_type.icon_color = icon_color
 
         if old_slug != slug:
             for news_item in News.query.all():
@@ -386,6 +406,7 @@ def edit_marker_type(type_id):
 @bp.route("/admin/marker-types/toggle/<int:type_id>", methods=["POST"])
 @login_required
 def toggle_marker_type(type_id):
+    get_marker_type_fallback_slug()
     marker_type = MarkerType.query.get_or_404(type_id)
 
     if marker_type.is_active:
@@ -407,6 +428,7 @@ def toggle_marker_type(type_id):
 @bp.route("/admin/marker-types/delete/<int:type_id>", methods=["POST"])
 @login_required
 def delete_marker_type(type_id):
+    get_marker_type_fallback_slug()
     marker_type = MarkerType.query.get_or_404(type_id)
 
     if MarkerType.query.count() <= 1:
