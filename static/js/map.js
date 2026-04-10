@@ -26,6 +26,11 @@ const markerDetailsHint = document.getElementById("marker-details-hint");
 const markerTitleInput = document.getElementById("marker-title-input");
 const markerDescriptionInput = document.getElementById("marker-description-input");
 const markerTypeInput = document.getElementById("marker-type-input");
+const markerTypePicker = document.getElementById("marker-type-picker");
+const markerTypePickerTrigger = document.getElementById("marker-type-picker-trigger");
+const markerTypePickerLabel = document.getElementById("marker-type-picker-label");
+const markerTypePickerBadge = document.getElementById("marker-type-picker-badge");
+const markerTypePickerMenu = document.getElementById("marker-type-picker-menu");
 const markerRegionInput = document.getElementById("marker-region-input");
 const markerSourceInput = document.getElementById("marker-source-input");
 const markerVisibleInput = document.getElementById("marker-visible-input");
@@ -180,6 +185,165 @@ function ensureMarkerTypeInputOption(type) {
     option.value = value;
     option.textContent = value;
     markerTypeInput.appendChild(option);
+    buildMarkerTypePickerOptions();
+    syncMarkerTypePickerFromInput();
+}
+
+function humanizeMarkerType(value) {
+    const normalized = normalizeMarkerType(value);
+    if (!normalized) {
+        return "Warning";
+    }
+
+    return normalized
+        .split("-")
+        .filter(Boolean)
+        .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+        .join(" ");
+}
+
+function getMarkerTypeOptionLabel(value) {
+    if (!markerTypeInput || !markerTypeInput.options) {
+        return humanizeMarkerType(value);
+    }
+
+    const normalized = normalizeMarkerType(value);
+    const matched = Array.from(markerTypeInput.options).find(
+        option => normalizeMarkerType(option.value) === normalized
+    );
+
+    if (!matched || !matched.textContent) {
+        return humanizeMarkerType(normalized);
+    }
+
+    const text = matched.textContent.trim();
+    return text || humanizeMarkerType(normalized);
+}
+
+function applyBadgeStyle(element, markerType) {
+    if (!element) {
+        return;
+    }
+
+    const style = resolveMarkerStyle(markerType);
+    const encodedIconUrl = encodeURI(style.iconUrl);
+
+    element.style.setProperty("--marker-bg", style.bgColor);
+    element.style.setProperty("--marker-border", style.borderColor);
+    element.style.setProperty("--marker-icon-color", style.iconColor);
+    element.style.setProperty("--marker-icon-url", `url('${encodedIconUrl}')`);
+}
+
+function updateMarkerTypePickerSelectionState() {
+    if (!markerTypePickerMenu) {
+        return;
+    }
+
+    const selectedValue = normalizeMarkerType(markerTypeInput ? markerTypeInput.value : "warning");
+    markerTypePickerMenu.querySelectorAll(".marker-type-picker__option").forEach(option => {
+        option.setAttribute("aria-selected", option.dataset.value === selectedValue ? "true" : "false");
+    });
+}
+
+function syncMarkerTypePickerFromInput() {
+    if (!markerTypeInput || !markerTypePickerTrigger || !markerTypePickerLabel || !markerTypePickerBadge) {
+        return;
+    }
+
+    const selectedValue = normalizeMarkerType(markerTypeInput.value || "warning");
+    markerTypePickerLabel.textContent = getMarkerTypeOptionLabel(selectedValue);
+    applyBadgeStyle(markerTypePickerBadge, selectedValue);
+    updateMarkerTypePickerSelectionState();
+}
+
+function closeMarkerTypePickerMenu() {
+    if (!markerTypePickerMenu || !markerTypePickerTrigger) {
+        return;
+    }
+
+    markerTypePickerMenu.hidden = true;
+    markerTypePickerTrigger.setAttribute("aria-expanded", "false");
+}
+
+function openMarkerTypePickerMenu() {
+    if (!markerTypePickerMenu || !markerTypePickerTrigger) {
+        return;
+    }
+
+    buildMarkerTypePickerOptions();
+    markerTypePickerMenu.hidden = false;
+    markerTypePickerTrigger.setAttribute("aria-expanded", "true");
+}
+
+function toggleMarkerTypePickerMenu() {
+    if (!markerTypePickerMenu || !markerTypePickerTrigger) {
+        return;
+    }
+
+    if (markerTypePickerMenu.hidden) {
+        openMarkerTypePickerMenu();
+        return;
+    }
+
+    closeMarkerTypePickerMenu();
+}
+
+function setMarkerTypeValue(value, dispatchChange = true) {
+    if (!markerTypeInput) {
+        return;
+    }
+
+    const normalized = normalizeMarkerType(value);
+    ensureMarkerTypeInputOption(normalized);
+    markerTypeInput.value = normalized;
+    syncMarkerTypePickerFromInput();
+
+    if (dispatchChange) {
+        markerTypeInput.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+}
+
+function buildMarkerTypePickerOptions() {
+    if (!markerTypeInput || !markerTypePickerMenu) {
+        return;
+    }
+
+    markerTypePickerMenu.innerHTML = "";
+
+    const seen = new Set();
+    Array.from(markerTypeInput.options).forEach(option => {
+        const value = normalizeMarkerType(option.value);
+        if (!value || seen.has(value)) {
+            return;
+        }
+        seen.add(value);
+
+        const optionButton = document.createElement("button");
+        optionButton.type = "button";
+        optionButton.className = "marker-type-picker__option";
+        optionButton.setAttribute("role", "option");
+        optionButton.dataset.value = value;
+
+        const badge = document.createElement("span");
+        badge.className = "marker-badge marker-badge--tiny marker-type-picker__option-badge";
+        badge.setAttribute("aria-hidden", "true");
+        applyBadgeStyle(badge, value);
+
+        const label = document.createElement("span");
+        label.className = "marker-type-picker__option-label";
+        label.textContent = option.textContent ? option.textContent.trim() : humanizeMarkerType(value);
+
+        optionButton.appendChild(badge);
+        optionButton.appendChild(label);
+        optionButton.addEventListener("click", () => {
+            setMarkerTypeValue(value, true);
+            closeMarkerTypePickerMenu();
+        });
+
+        markerTypePickerMenu.appendChild(optionButton);
+    });
+
+    updateMarkerTypePickerSelectionState();
 }
 
 function normalizeMarkerData(rawData) {
@@ -477,6 +641,7 @@ function showMarkerDetails(marker) {
     if (markerTypeInput) {
         ensureMarkerTypeInputOption(marker._data.marker_type);
         markerTypeInput.value = marker._data.marker_type;
+        syncMarkerTypePickerFromInput();
     }
 
     if (markerRegionInput) {
@@ -499,6 +664,7 @@ function hideMarkerDetails() {
     activeMarker = null;
 
     closePanel(markerSaveForm);
+    closeMarkerTypePickerMenu();
 
     if (markerDetailsPanel) {
         markerDetailsPanel.hidden = true;
@@ -515,6 +681,51 @@ function hideMarkerDetails() {
     if (markerPositionLabel) {
         markerPositionLabel.textContent = "";
     }
+}
+
+function initializeMarkerTypePicker() {
+    if (!markerTypeInput || !markerTypePicker || !markerTypePickerTrigger || !markerTypePickerMenu) {
+        return;
+    }
+
+    if (markerTypePicker.dataset.initialized === "true") {
+        return;
+    }
+
+    buildMarkerTypePickerOptions();
+    syncMarkerTypePickerFromInput();
+
+    markerTypeInput.addEventListener("change", syncMarkerTypePickerFromInput);
+    markerTypePickerTrigger.addEventListener("click", () => {
+        toggleMarkerTypePickerMenu();
+    });
+
+    markerTypePickerTrigger.addEventListener("keydown", event => {
+        if (event.key === "Enter" || event.key === " " || event.key === "ArrowDown") {
+            event.preventDefault();
+            openMarkerTypePickerMenu();
+            return;
+        }
+
+        if (event.key === "Escape") {
+            closeMarkerTypePickerMenu();
+        }
+    });
+
+    markerTypePickerMenu.addEventListener("keydown", event => {
+        if (event.key === "Escape") {
+            closeMarkerTypePickerMenu();
+            markerTypePickerTrigger.focus();
+        }
+    });
+
+    document.addEventListener("click", event => {
+        if (!markerTypePicker.contains(event.target)) {
+            closeMarkerTypePickerMenu();
+        }
+    });
+
+    markerTypePicker.dataset.initialized = "true";
 }
 
 function serializeMarkerData(data, includeId) {
@@ -657,6 +868,8 @@ if (Array.isArray(newsData)) {
         createMarkerLayer(item);
     });
 }
+
+initializeMarkerTypePicker();
 
 if (CAN_MANAGE_MARKERS) {
     if (markerDeleteButton) {

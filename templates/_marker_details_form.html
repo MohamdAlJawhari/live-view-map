@@ -19,14 +19,29 @@
         </div>
 
         <div class="field">
-            <label for="marker-type-input">Marker type</label>
-            <select id="marker-type-input">
+            <label for="marker-type-picker-trigger">Marker type</label>
+            <select id="marker-type-input" class="marker-type-native">
                 {% for marker_type in marker_type_choices %}
                     <option value="{{ marker_type.slug }}">
                         {{ marker_type.name }}{% if not marker_type.is_active %} [inactive]{% endif %}
                     </option>
                 {% endfor %}
             </select>
+            <div id="marker-type-picker" class="marker-type-picker">
+                <button
+                    id="marker-type-picker-trigger"
+                    class="marker-type-picker__trigger"
+                    type="button"
+                    aria-haspopup="listbox"
+                    aria-expanded="false"
+                    aria-controls="marker-type-picker-menu"
+                >
+                    <span id="marker-type-picker-badge" class="marker-badge marker-badge--tiny marker-type-picker__badge" aria-hidden="true"></span>
+                    <span id="marker-type-picker-label" class="marker-type-picker__label"></span>
+                    <span class="marker-type-picker__chevron" aria-hidden="true">&#9662;</span>
+                </button>
+                <div id="marker-type-picker-menu" class="marker-type-picker__menu" role="listbox" hidden></div>
+            </div>
         </div>
 
         <div class="field">
