@@ -8,6 +8,11 @@ Live View Map is a Flask website for tracking location-based incidents on an int
 - Provides a public view for visitors (only items marked as visible are shown).
 - Provides an admin view where logged-in users can manage map data and marker styles.
 
+## 🎥 Demo Video
+
+[![Watch the video](https://img.youtube.com/vi/mU7GzGnUu1g/0.jpg)](https://youtu.be/mU7GzGnUu1g)
+
+
 ## Important Features
 
 - Interactive map with OpenStreetMap tiles.
