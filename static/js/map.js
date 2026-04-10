@@ -6,7 +6,7 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 
 const CAN_MANAGE_MARKERS = typeof canManageMarkers === "boolean" ? canManageMarkers : false;
 const CAN_MANAGE_POLYGONS = typeof canManagePolygons === "boolean" ? canManagePolygons : false;
-const USE_CLUSTERING = !CAN_MANAGE_MARKERS && (typeof useClustering === "boolean" ? useClustering : true);
+const USE_CLUSTERING = typeof useClustering === "boolean" ? useClustering : true;
 
 const newsList = document.getElementById("news-list");
 const typeFilter = document.getElementById("type-filter");
