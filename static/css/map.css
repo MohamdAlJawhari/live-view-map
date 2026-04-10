@@ -194,6 +194,14 @@
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
 }
 
+.marker-pin .marker-badge {
+    border-color: transparent;
+}
+
+.marker-pin .marker-badge.marker-badge--active {
+    border-color: var(--marker-border, #ffff00);
+}
+
 .marker-badge::before {
     content: "";
     position: absolute;

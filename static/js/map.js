@@ -51,6 +51,7 @@ const deletedPolygonIds = new Set();
 
 let markerLayer;
 let activeMarker = null;
+let selectedMarker = null;
 let nextTempMarkerId = -1;
 
 let activePolygonLayer = null;
@@ -195,12 +196,12 @@ function normalizeMarkerData(rawData) {
     };
 }
 
-function getMarkerIcon(type) {
+function getMarkerIcon(type, isSelected = false) {
     const style = resolveMarkerStyle(type);
     const encodedIconUrl = encodeURI(style.iconUrl);
     const html = `
         <span
-            class="marker-badge"
+            class="marker-badge${isSelected ? " marker-badge--active" : ""}"
             style="
                 --marker-bg:${style.bgColor};
                 --marker-border:${style.borderColor};
@@ -217,6 +218,31 @@ function getMarkerIcon(type) {
         iconAnchor: [20, 20],
         popupAnchor: [0, -20]
     });
+}
+
+function updateMarkerIconSelectionState(marker) {
+    if (!marker || !marker._data) {
+        return;
+    }
+
+    marker.setIcon(getMarkerIcon(marker._data.marker_type, marker === selectedMarker));
+}
+
+function setSelectedMarker(marker) {
+    if (selectedMarker === marker) {
+        return;
+    }
+
+    const previousSelectedMarker = selectedMarker;
+    selectedMarker = marker || null;
+
+    if (previousSelectedMarker) {
+        updateMarkerIconSelectionState(previousSelectedMarker);
+    }
+
+    if (selectedMarker) {
+        updateMarkerIconSelectionState(selectedMarker);
+    }
 }
 
 function makeMarkerPopupContent(data) {
@@ -413,6 +439,7 @@ function closePanel(panel) {
 }
 
 function showMarkerDetails(marker) {
+    setSelectedMarker(marker);
     activeMarker = marker;
 
     closePanel(polygonSaveForm);
@@ -460,6 +487,7 @@ function showMarkerDetails(marker) {
 }
 
 function hideMarkerDetails() {
+    setSelectedMarker(null);
     activeMarker = null;
 
     closePanel(markerSaveForm);
@@ -501,7 +529,7 @@ function serializeMarkerData(data, includeId) {
 }
 
 function syncMarkerTracking(marker) {
-    marker.setIcon(getMarkerIcon(marker._data.marker_type));
+    updateMarkerIconSelectionState(marker);
     marker.setPopupContent(makeMarkerPopupContent(marker._data));
     renderNewsCard(marker._data);
     ensureFilterOption(marker._data.marker_type);
@@ -549,6 +577,10 @@ function createMarkerLayer(rawData) {
 
     if (CAN_MANAGE_MARKERS) {
         attachManagedMarkerHandlers(marker);
+    } else {
+        marker.on("click", () => {
+            setSelectedMarker(marker);
+        });
     }
 
     showMarker(marker);
@@ -585,6 +617,10 @@ function deleteMarker(marker) {
     hideMarker(marker);
     delete markersById[String(markerId)];
     removeNewsCard(markerId);
+
+    if (selectedMarker === marker) {
+        setSelectedMarker(null);
+    }
 
     if (activeMarker === marker) {
         hideMarkerDetails();
@@ -681,6 +717,7 @@ if (newsList) {
             return;
         }
 
+        setSelectedMarker(marker);
         map.setView(marker.getLatLng(), 10);
         marker.openPopup();
 
