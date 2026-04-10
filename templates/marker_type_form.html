@@ -44,12 +44,12 @@
             <div class="field-grid">
                 <div class="field">
                     <label for="bg_color">Background color</label>
-                    <input id="bg_color" type="color" name="bg_color" value="{{ marker_type.bg_color if marker_type else '#8a4b00' }}">
+                    <input id="bg_color" type="color" name="bg_color" value="{{ marker_type.bg_color if marker_type else '#ff0000' }}">
                 </div>
 
                 <div class="field">
                     <label for="border_color">Ring color</label>
-                    <input id="border_color" type="color" name="border_color" value="{{ marker_type.border_color if marker_type else '#f4c20d' }}">
+                    <input id="border_color" type="color" name="border_color" value="{{ marker_type.border_color if marker_type else '#ffff00' }}">
                 </div>
 
                 <div class="field">
@@ -64,8 +64,8 @@
                     id="marker-type-icon-preview"
                     class="marker-badge marker-type-icon-preview marker-type-icon-preview--large"
                     style="
-                        --marker-bg:{{ marker_type.bg_color if marker_type else '#8a4b00' }};
-                        --marker-border:{{ marker_type.border_color if marker_type else '#f4c20d' }};
+                        --marker-bg:{{ marker_type.bg_color if marker_type else '#ff0000' }};
+                        --marker-border:{{ marker_type.border_color if marker_type else '#ffff00' }};
                         --marker-icon-color:{{ marker_type.icon_color if marker_type else '#ffffff' }};
                         --marker-icon-url:url('{{ url_for('static', filename=selected_icon) }}');
                     "

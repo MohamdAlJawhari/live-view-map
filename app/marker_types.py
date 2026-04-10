@@ -6,25 +6,27 @@ from extensions import db
 from models import MarkerType, News
 
 DEFAULT_ICON_PATH = "icons/default.svg"
-DEFAULT_BG_COLOR = "#8a4b00"
-DEFAULT_BORDER_COLOR = "#f4c20d"
+DEFAULT_BG_COLOR = "#ff0000"
+DEFAULT_BORDER_COLOR = "#ffff00"
 DEFAULT_ICON_COLOR = "#ffffff"
+LEGACY_DEFAULT_BG_COLOR = "#8a4b00"
+LEGACY_DEFAULT_BORDER_COLOR = "#f4c20d"
 
 DEFAULT_MARKER_TYPES = (
     {
         "name": "Warning",
         "slug": "warning",
         "icon_path": DEFAULT_ICON_PATH,
-        "bg_color": "#8a4b00",
-        "border_color": "#f4c20d",
+        "bg_color": DEFAULT_BG_COLOR,
+        "border_color": DEFAULT_BORDER_COLOR,
         "icon_color": "#ffffff",
     },
     {
         "name": "Rocket",
         "slug": "rocket",
         "icon_path": "icons/rocket.svg",
-        "bg_color": "#8a4b00",
-        "border_color": "#f4c20d",
+        "bg_color": DEFAULT_BG_COLOR,
+        "border_color": DEFAULT_BORDER_COLOR,
         "icon_color": "#ffffff",
     },
     {
@@ -100,8 +102,8 @@ def ensure_marker_type_schema():
     inspector = inspect(db.engine)
     columns = {column["name"] for column in inspector.get_columns("marker_type")}
     additions = (
-        ("bg_color", "VARCHAR(20) NOT NULL DEFAULT '#8a4b00'"),
-        ("border_color", "VARCHAR(20) NOT NULL DEFAULT '#f4c20d'"),
+        ("bg_color", "VARCHAR(20) NOT NULL DEFAULT '#ff0000'"),
+        ("border_color", "VARCHAR(20) NOT NULL DEFAULT '#ffff00'"),
         ("icon_color", "VARCHAR(20) NOT NULL DEFAULT '#ffffff'"),
     )
 
@@ -138,6 +140,36 @@ def ensure_marker_types_seeded():
             )
         db.session.commit()
         existing_by_slug = {item.slug: item for item in MarkerType.query.all()}
+
+    for marker_type in existing_by_slug.values():
+        updated_any = False
+
+        normalized_bg = normalize_marker_color(marker_type.bg_color, LEGACY_DEFAULT_BG_COLOR)
+        normalized_border = normalize_marker_color(marker_type.border_color, LEGACY_DEFAULT_BORDER_COLOR)
+        normalized_icon = normalize_marker_color(marker_type.icon_color, DEFAULT_ICON_COLOR)
+
+        if normalized_bg == LEGACY_DEFAULT_BG_COLOR:
+            if marker_type.bg_color != DEFAULT_BG_COLOR:
+                marker_type.bg_color = DEFAULT_BG_COLOR
+                updated_any = True
+        elif marker_type.bg_color != normalized_bg:
+            marker_type.bg_color = normalized_bg
+            updated_any = True
+
+        if normalized_border == LEGACY_DEFAULT_BORDER_COLOR:
+            if marker_type.border_color != DEFAULT_BORDER_COLOR:
+                marker_type.border_color = DEFAULT_BORDER_COLOR
+                updated_any = True
+        elif marker_type.border_color != normalized_border:
+            marker_type.border_color = normalized_border
+            updated_any = True
+
+        if marker_type.icon_color != normalized_icon:
+            marker_type.icon_color = normalized_icon
+            updated_any = True
+
+        if updated_any:
+            changed = True
 
     distinct_news_types = db.session.query(News.marker_type).distinct().all()
     for (raw_type,) in distinct_news_types:

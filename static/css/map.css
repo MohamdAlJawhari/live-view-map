@@ -189,8 +189,8 @@
     display: block;
     box-sizing: border-box;
     position: relative;
-    background: var(--marker-bg, #8a4b00);
-    border: 6px solid var(--marker-border, #f4c20d);
+    background: var(--marker-bg, #ff0000);
+    border: 6px solid var(--marker-border, #ffff00);
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
 }
 
